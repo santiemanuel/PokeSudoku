@@ -11,9 +11,8 @@ public class DrawIcons {
 	
 	public DrawIcons(){
 		
-		System.out.println("Inicio DrawIcons");
 		ListImgPosition myList = new ListImgPosition();
-		ArrayList<Icon> myicons = new ArrayList<Icon>();
+		this.myicons = new ArrayList<Icon>();
 		this.positions = myList.getListPosition();
 		
 		while (!positions.isEmpty()){
@@ -22,12 +21,9 @@ public class DrawIcons {
 			myicons.add(new Icon(element));
 			positions.remove(0);
 		}
-		System.out.println("Fin DrawIcons");
-		
 	}
 	
 	public ArrayList<Icon> getMyicons(){
-		System.out.println("Iconos entregados");
 		return (this.myicons);
 	}
 	

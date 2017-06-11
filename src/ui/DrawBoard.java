@@ -1,6 +1,8 @@
 package ui;
 
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.util.ArrayList;
 
 import javax.swing.JPanel;
@@ -14,7 +16,6 @@ public class DrawBoard extends JPanel {
 	public DrawBoard (){
 		super();
 		this.myicons = new DrawIcons();
-		System.out.println("Largo de lista INICIO"+myicons.getMyicons().size());
 		DrawBoard.this.repaint();
 		
 		
@@ -23,13 +24,12 @@ public class DrawBoard extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        System.out.println("Llegue aqui");
+        Graphics2D g2d = (Graphics2D) g;
         ArrayList<Icon> listIcons = new ArrayList<Icon>();
         listIcons = this.myicons.getMyicons();
-        System.out.println("Iconos cargados");
-        System.out.println("Largo de lista"+listIcons.size());
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         for (Icon myicon: listIcons){
-        	myicon.drawIcon(g);
+        	myicon.drawIcon(g2d);
         }
     }
 	

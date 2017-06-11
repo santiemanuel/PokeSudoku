@@ -1,6 +1,7 @@
 package testing;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 
 import javax.swing.BorderFactory;
@@ -27,6 +28,9 @@ public class Game extends JPanel{
 
         drawingboard = new DrawBoard();
         contentPane.add(drawingboard);
+        
+        frame.setMinimumSize(new Dimension(800,600));
+        frame.setResizable(false);
 
         frame.setContentPane(contentPane);
         frame.pack();

@@ -1,6 +1,6 @@
 package ui;
 
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 
 import utils.Position;
 
@@ -14,8 +14,8 @@ public class Icon {
 		this.y = cell.getY();
 	}
 	
-	public void drawIcon(Graphics g){
-		g.fillOval(this.x, this.y, 10, 10);
+	public void drawIcon(Graphics2D g){
+		g.fillOval(this.x, this.y, 20, 20);
 	}
 
 }

@@ -21,8 +21,8 @@ public class SudokuGen extends Matrix {
 	public SudokuGen SwapVals(PokeVal value1, PokeVal value2)
 
 	{
-		ArrayList<CellPosition> cellsFirst = new ArrayList<CellPosition>();
-		ArrayList<CellPosition> cellsSecond = new ArrayList<CellPosition>();
+		ArrayList<Position> cellsFirst = new ArrayList<Position>();
+		ArrayList<Position> cellsSecond = new ArrayList<Position>();
 		int row,column;
 		
 		for (int r=0;r<this.ROWS;r++)
@@ -30,29 +30,29 @@ public class SudokuGen extends Matrix {
 			for (int c=0;c<this.COLUMNS;c++)
 			{
 				if (this.values[r][c].getIDPoke() == value1.getIDPoke()){
-					CellPosition cell = new CellPosition(r,c);
+					Position cell = new Position(r,c);
 					cellsFirst.add(cell);
 				}
 				if (this.values[r][c].getIDPoke() == value2.getIDPoke()){
-					CellPosition cell = new CellPosition(r,c);
+					Position cell = new Position(r,c);
 					cellsSecond.add(cell);
 				}
 			}
 		}
 		
 		while(!cellsFirst.isEmpty()){
-			CellPosition AuxPos = cellsFirst.get(0);
+			Position AuxPos = cellsFirst.get(0);
 			cellsFirst.remove(0);
-			row = AuxPos.getRow();
-			column = AuxPos.getColumn();
+			row = AuxPos.getX();
+			column = AuxPos.getY();
 			this.values[row][column] = value2;
 		}
 		
 		while(!cellsSecond.isEmpty()){
-			CellPosition AuxPos = cellsSecond.get(0);
+			Position AuxPos = cellsSecond.get(0);
 			cellsSecond.remove(0);
-			row = AuxPos.getRow();
-			column = AuxPos.getColumn();
+			row = AuxPos.getX();
+			column = AuxPos.getY();
 			this.values[row][column] = value1;
 		}
 		

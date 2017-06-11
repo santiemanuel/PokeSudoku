@@ -19,7 +19,7 @@ public class Game extends JPanel{
 	private JPanel drawingboard;
 	
     private void displayGUI() {
-        JFrame frame = new JFrame("Circle Drawing Example");
+        JFrame frame = new JFrame("Sudoku Layout");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         JPanel contentPane = new JPanel();
@@ -29,7 +29,7 @@ public class Game extends JPanel{
         drawingboard = new DrawBoard();
         contentPane.add(drawingboard);
         
-        frame.setMinimumSize(new Dimension(800,600));
+        frame.setMinimumSize(new Dimension(400, 400));
         frame.setResizable(false);
 
         frame.setContentPane(contentPane);

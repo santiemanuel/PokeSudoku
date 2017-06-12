@@ -10,6 +10,7 @@ import javax.swing.JPanel;
 
 import ui.DrawBoard;
 import ui.DrawIcons;
+import utils.SudokuBoard;
 
 @SuppressWarnings("serial")
 public class Game extends JPanel{

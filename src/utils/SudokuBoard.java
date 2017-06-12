@@ -1,8 +1,12 @@
 package utils;
 
+import java.util.ArrayList;
+
 public class SudokuBoard {
 	
 	private SudokuGen board;
+	private static final int WIDTH = 320;
+	private static final int HEIGHT = 320;
 	
 	public SudokuBoard(){
 		this.board = new SudokuGen();
@@ -22,8 +26,29 @@ public class SudokuBoard {
 		{
 			for (int c=0;c<this.board.COLUMNS;c++)
 			{
-				this.board.values[r][c] = new PokeVal(0,"");
+				this.board.values[r][c] = new PokeVal(0,"",null);
 				this.board.values[r][c].setIDPoke(auxMat[r][c]);
+			}
+		}
+		
+		ArrayList<Position> AuxList = new ArrayList<Position>();
+		
+		for (int r = 20; r <= WIDTH+20; r+=40)
+		{
+			for (int c = 20; c <= HEIGHT+20; c+=40)
+			{	
+				AuxList.add(new Position(r,c));
+			}
+		}
+		
+		
+		for (int r=0;r<this.board.ROWS;r++)
+		{
+			for (int c=0;c<this.board.COLUMNS;c++)
+			{
+				Position cell = AuxList.get(0);
+				this.board.values[c][r].setPos(cell);
+				AuxList.remove(0);
 			}
 		}
 		

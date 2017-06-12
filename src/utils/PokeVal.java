@@ -3,10 +3,12 @@ package utils;
 public class PokeVal {
 	private int IDPoke;
 	private String nameImg;
+	private Position pos;
 	
-	public PokeVal(int ID, String name){
+	public PokeVal(int ID, String name, Position pos){
 		this.IDPoke = ID;
-		this.nameImg = name;	
+		this.nameImg = name;
+		this.setPos(pos);
 	}
 
 	public int getIDPoke() {
@@ -23,6 +25,14 @@ public class PokeVal {
 
 	public void setNameImg(String nameImg) {
 		this.nameImg = nameImg;
+	}
+
+	public Position getPos() {
+		return pos;
+	}
+
+	public void setPos(Position pos) {
+		this.pos = pos;
 	}
 
 }

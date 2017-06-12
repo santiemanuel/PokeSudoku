@@ -10,8 +10,8 @@ public class MainTest {
 		
 		System.out.println();
 		
-		PokeVal val1 = new PokeVal(2,"");
-		PokeVal val2 = new PokeVal(5,"");
+		PokeVal val1 = new PokeVal(2,"",null);
+		PokeVal val2 = new PokeVal(5,"",null);
 		
 		sudo.setBoard(sudo.getBoard().SwapVals(val1, val2));
 		

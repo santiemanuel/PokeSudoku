@@ -8,7 +8,6 @@ import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
-import utils.Matrix;
 import utils.SudokuBoard;
 
 
@@ -56,6 +55,7 @@ public class DrawBoard extends JPanel {
 	
     @Override
     protected void paintComponent(Graphics g) {
+    	setOpaque(false);
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
 
@@ -65,7 +65,10 @@ public class DrawBoard extends JPanel {
         {
         	for (int c = 0;c<COLUMNS;c++)
         	{
+        		
+        		this.myIconMatrix[c][r].setIconColor(sudokuB,r,c);
         		this.myIconMatrix[r][c].drawIcon(g2d);
+        		
         	}
         }
         

@@ -1,9 +1,5 @@
 package utils;
 
-import java.util.ArrayList;
-
-import ui.Icon;
-
 public class Matrix {
 	protected final int ROWS = 9;
 	protected final int  COLUMNS = 9;

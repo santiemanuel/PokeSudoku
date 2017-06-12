@@ -1,6 +1,7 @@
 package testing;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 
@@ -10,7 +11,6 @@ import javax.swing.JPanel;
 
 import ui.DrawBoard;
 import ui.DrawIcons;
-import utils.SudokuBoard;
 
 @SuppressWarnings("serial")
 public class Game extends JPanel{
@@ -22,15 +22,16 @@ public class Game extends JPanel{
     private void displayGUI() {
         JFrame frame = new JFrame("Sudoku Layout");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
+        Color bgColor = Color.decode("#94C9A9");
         JPanel contentPane = new JPanel();
         contentPane.setLayout(new BorderLayout(GAP, GAP));
         contentPane.setBorder(BorderFactory.createEmptyBorder(GAP, GAP, GAP, GAP));
+        contentPane.setBackground(bgColor);
 
         drawingboard = new DrawBoard();
         contentPane.add(drawingboard);
         
-        frame.setMinimumSize(new Dimension(400, 400));
+        frame.setMinimumSize(new Dimension(380, 380));
         frame.setResizable(false);
 
         frame.setContentPane(contentPane);

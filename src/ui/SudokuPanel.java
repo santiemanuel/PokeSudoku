@@ -1,6 +1,8 @@
 package ui;
 
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -10,30 +12,30 @@ import javax.swing.JPanel;
 
 import utils.SudokuBoard;
 
-
 @SuppressWarnings("serial")
-public class DrawBoard extends JPanel {
-    
+public class SudokuPanel extends JPanel {
+	
 	private DrawIcons myicons;
-	private SudokuBoard sudokuB;
+	private SudokuBoard puzzle;
 	private static int ROWS = 9;
 	private static int COLUMNS = 9;
 	private Icon[][] myIconMatrix;
-    
-	public DrawBoard (){
-		super();
+
+	public SudokuPanel(){
+		this.setPreferredSize(new Dimension(540,540));
+		this.setMinimumSize(new Dimension(540,540));
+		this.puzzle = new SudokuBoard();
+		this.puzzle.setBoard(puzzle.getBoard().SwapRows(1, 3, 1));
 		this.myicons = new DrawIcons();
-		this.sudokuB = new SudokuBoard();
         ArrayList<Icon> listIcons = new ArrayList<Icon>();
         this.myIconMatrix = new Icon[ROWS][COLUMNS];
         listIcons = this.myicons.getMyicons();
         
-        System.out.println(listIcons.size());
-        
         this.myIconMatrix = this.getMatrix(listIcons);
-		DrawBoard.this.repaint();
-		
-		
+	}
+	
+	public void newSudoku(SudokuBoard puzzle){
+		this.puzzle = puzzle;
 	}
 	
 	private Icon[][] getMatrix(ArrayList<Icon> myicons){
@@ -51,11 +53,11 @@ public class DrawBoard extends JPanel {
 		return (myiconMatrix);
 	}
 	
-	
-	
-    @Override
-    protected void paintComponent(Graphics g) {
-    	setOpaque(false);
+	@Override
+	protected void paintComponent(Graphics g) {
+		
+		System.out.println("Pintando");
+		setOpaque(false);
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
 
@@ -66,26 +68,25 @@ public class DrawBoard extends JPanel {
         	for (int c = 0;c<COLUMNS;c++)
         	{
         		
-        		this.myIconMatrix[c][r].setIconColor(sudokuB,r,c);
+        		this.myIconMatrix[c][r].setIconColor(this.puzzle,r,c);
         		this.myIconMatrix[r][c].drawIcon(g2d);
         		
         	}
         }
         
+        Font f = new Font("Roboto", Font.BOLD, 12);
+		g2d.setFont(f);
+        
         for (int r = 0;r<ROWS;r++)
         {
         	for (int c = 0;c<COLUMNS;c++)
         	{
-        		int posX = sudokuB.getBoard().getValue(r, c).getPos().getX()-15;
-        		int posY = sudokuB.getBoard().getValue(r, c).getPos().getY()-5;
-        		String number = Integer.toString(sudokuB.getBoard().getValue(r, c).getIDPoke());
+        		int posX = this.puzzle.getBoard().getValue(r, c).getPos().getX()-15;
+        		int posY = this.puzzle.getBoard().getValue(r, c).getPos().getY()-5;
+        		String number = Integer.toString(this.puzzle.getBoard().getValue(r, c).getIDPoke());
         		g.setColor(Color.BLACK);
         		g.drawString(number, posX, posY);
         	}
         }
-           
-    }
-	
-	
-	
+	}
 }

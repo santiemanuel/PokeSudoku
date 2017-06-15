@@ -41,7 +41,7 @@ public class Icon {
 	
 	public void drawIcon(Graphics2D g){
 		g.setColor(mycolor);
-		g.fillOval(this.x, this.y, 20, 20);
+		g.fillOval(this.x, this.y, 64, 64);
 	}
 
 }

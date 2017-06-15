@@ -13,15 +13,21 @@ public class MainTest {
 		PokeVal val1 = new PokeVal(2,"",null);
 		PokeVal val2 = new PokeVal(5,"",null);
 		
-		sudo.setBoard(sudo.getBoard().SwapVals(val1, val2));
+		sudo.SwapVals(val1, val2);
 		
 		sudo.showSudokuMatrix();
 		
 		System.out.println();
 		
-		sudo.setBoard(sudo.getBoard().SwapRows(1, 3, 1));
+		//sudo.rotate();
+		
+		sudo.SwapColumns(0, 1, 1);
 		
 		sudo.showSudokuMatrix();
+		
+		System.out.println();
+		
+		
 		
 
 	}

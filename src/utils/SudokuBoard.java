@@ -2,14 +2,14 @@ package utils;
 
 import java.util.ArrayList;
 
-public class SudokuBoard {
+public class SudokuBoard extends Matrix {
 	
-	private SudokuGen board;
-	private static final int WIDTH = 320;
-	private static final int HEIGHT = 320;
+	private Matrix board;
+	private static final int WIDTH = 640;
+	private static final int HEIGHT = 640;
 	
 	public SudokuBoard(){
-		this.board = new SudokuGen();
+		this.board = new Matrix();
 		int[][] auxMat=new int[][]{
 			{5,3,4,6,7,8,9,1,2},
 			{6,7,2,1,9,5,3,4,8},
@@ -33,11 +33,11 @@ public class SudokuBoard {
 		
 		ArrayList<Position> AuxList = new ArrayList<Position>();
 		
-		for (int r = 20; r <= WIDTH+20; r+=40)
+		for (int r = 20; r <= WIDTH+20; r+=80)
 		{
-			for (int c = 20; c <= HEIGHT+20; c+=40)
+			for (int c = 20; c <= HEIGHT+20; c+=80)
 			{	
-				AuxList.add(new Position(r,c));
+				AuxList.add(new Position(r+5,c+20));
 			}
 		}
 		
@@ -55,25 +55,132 @@ public class SudokuBoard {
 	}
 	
 	public void showSudokuMatrix(){
-		for (int r=0;r<board.ROWS;r++)
+		for (int r=0;r<this.board.ROWS;r++)
 		{
-			for (int c=0;c<board.COLUMNS;c++)
+			for (int c=0;c<this.board.COLUMNS;c++)
 			{
-				System.out.print(board.values[r][c].getIDPoke()+" ");
+				System.out.print(this.board.values[r][c].getIDPoke()+" ");
 			}
 			System.out.println();
 		}
 		
 	}
 
-	public SudokuGen getBoard() {
-		return board;
+	public Matrix getBoard() {
+		return (this.board);
 	}
 
-	public void setBoard(SudokuGen board) {
+	public void setBoard(Matrix board) {
 		this.board = board;
 	}
 	
+	public void rotate()
+	{
+		Matrix matAux = new Matrix();
+		for (int r=0;r<this.ROWS;r++)
+		{
+			for (int c=0;c<this.COLUMNS;c++)
+			{
+				matAux.setValue(r, c, this.board.getValue(c, r));
+			}
+		}
+		
+		
+		
+		board.setMatrix(matAux.getMatrix());
+			
+	}
 	
+	public void SwapVals(PokeVal value1, PokeVal value2)
+
+	{
+		ArrayList<Position> cellsFirst = new ArrayList<Position>();
+		ArrayList<Position> cellsSecond = new ArrayList<Position>();
+		int row,column;
+		
+		for (int r=0;r<this.ROWS;r++)
+		{
+			for (int c=0;c<this.COLUMNS;c++)
+			{
+				if (this.board.values[r][c].getIDPoke() == value1.getIDPoke()){
+					Position cell = new Position(r,c);
+					cellsFirst.add(cell);
+				}
+				if (this.board.values[r][c].getIDPoke() == value2.getIDPoke()){
+					Position cell = new Position(r,c);
+					cellsSecond.add(cell);
+				}
+			}
+		}
+		
+		while(!cellsFirst.isEmpty()){
+			Position AuxPos = cellsFirst.get(0);
+			cellsFirst.remove(0);
+			row = AuxPos.getX();
+			column = AuxPos.getY();
+			this.board.setValue(row, column, value2);
+			//this.board.values[row][column] = value2;
+		}
+		
+		while(!cellsSecond.isEmpty()){
+			Position AuxPos = cellsSecond.get(0);
+			cellsSecond.remove(0);
+			row = AuxPos.getX();
+			column = AuxPos.getY();
+			this.board.setValue(row, column, value1);
+			//this.board.values[row][column] = value1;
+		}
+		
+	}
+	
+	public void SwapRows(int row1, int row2, int group){
+		ArrayList<PokeVal> ListAux = new ArrayList<PokeVal>();
+		int rows = 0;
+		PokeVal temp = null;
+		if (group == 0)	rows = 0;
+		if (group == 1)	rows = 3;
+		if (group == 2)	rows = 6;
+		for (int c=0;c<this.COLUMNS;c++)
+		{
+			ListAux.add(this.board.values[rows+row1-1][c]);
+		}
+		for (int c=0;c<this.COLUMNS;c++)
+		{
+			this.board.values[rows+row1-1][c] = this.board.values[rows+row2-1][c];
+		}
+		for (int c=0;c<this.COLUMNS;c++)
+		{
+			temp = ListAux.get(0);
+			this.board.setValue(rows+row2-1, c, temp);
+			//this.board.values[rows+row2-1][c] = temp;
+			ListAux.remove(0);
+		}
+		
+	}
+	
+	public void SwapColumns(int column1, int column2, int group){
+		ArrayList<PokeVal> ListAux = new ArrayList<PokeVal>();
+		int columns = 0;
+		PokeVal temp = null;
+		if (group == 0)	columns = 0;
+		if (group == 1)	columns = 3;
+		if (group == 2)	columns = 6;
+		
+		for (int r=0;r<this.ROWS;r++)
+		{
+			ListAux.add(this.board.values[r][columns+column1]);
+		}
+		for (int r=0;r<this.ROWS;r++)
+		{
+			this.board.values[r][columns+column1] = this.board.values[r][columns+column2];
+		}
+		for (int r=0;r<this.ROWS;r++)
+		{
+			temp = ListAux.get(0);
+			this.board.setValue(r, columns+column2, temp);
+			this.board.values[r][columns+column2] = temp;
+			ListAux.remove(0);
+		}
+	}
 
 }

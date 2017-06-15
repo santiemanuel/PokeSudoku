@@ -25,6 +25,14 @@ public class Matrix {
 		return(this.values[row][column]); 
 	}
 	
+	public void setMatrix(PokeVal[][] board){
+		this.values = board;
+	}
+	
+	public PokeVal[][] getMatrix(){
+		return (this.values);
+	}
+	
 	public void setValue(int row, int column, PokeVal value)
 	{
 		this.values[row][column] = value;

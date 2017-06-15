@@ -18,20 +18,18 @@ public class GameFrame extends JFrame {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	
 		JPanel windowPanel = new JPanel();
-		windowPanel.setPreferredSize(new Dimension(540,540));
+		windowPanel.setPreferredSize(new Dimension(800,800));
 		
-		//windowPanel.setLayout(new FlowLayout());
-		windowPanel.setMinimumSize(new Dimension(540,540));
+		windowPanel.setMinimumSize(new Dimension(800,800));
 		this.sPanel = new SudokuPanel();
 		windowPanel.add(this.sPanel);
-		
 		this.add(windowPanel);
 		rebuild();
 	}
 	
 	public void rebuild(){
 		SudokuBoard puzzle = new SudokuBoard();
-		puzzle.setBoard(puzzle.getBoard().SwapRows(1, 3, 1));
+		puzzle.SwapColumns(0, 1, 1);
 		this.sPanel.newSudoku(puzzle);
 		this.sPanel.repaint();
 		this.sPanel.revalidate();

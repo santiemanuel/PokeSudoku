@@ -22,10 +22,8 @@ public class SudokuPanel extends JPanel {
 	private Icon[][] myIconMatrix;
 
 	public SudokuPanel(){
-		this.setPreferredSize(new Dimension(540,540));
-		this.setMinimumSize(new Dimension(540,540));
-		this.puzzle = new SudokuBoard();
-		this.puzzle.setBoard(puzzle.getBoard().SwapRows(1, 3, 1));
+		this.setPreferredSize(new Dimension(800,800));
+		this.setMinimumSize(new Dimension(800,800));
 		this.myicons = new DrawIcons();
         ArrayList<Icon> listIcons = new ArrayList<Icon>();
         this.myIconMatrix = new Icon[ROWS][COLUMNS];
@@ -74,18 +72,21 @@ public class SudokuPanel extends JPanel {
         	}
         }
         
-        Font f = new Font("Roboto", Font.BOLD, 12);
+        Font f = new Font("Roboto", Font.BOLD, 24);
 		g2d.setFont(f);
+		
+		int posX, posY;
+		String number;
         
         for (int r = 0;r<ROWS;r++)
         {
         	for (int c = 0;c<COLUMNS;c++)
         	{
-        		int posX = this.puzzle.getBoard().getValue(r, c).getPos().getX()-15;
-        		int posY = this.puzzle.getBoard().getValue(r, c).getPos().getY()-5;
-        		String number = Integer.toString(this.puzzle.getBoard().getValue(r, c).getIDPoke());
-        		g.setColor(Color.BLACK);
-        		g.drawString(number, posX, posY);
+        		posX = this.puzzle.getBoard().getValue(r, c).getPos().getX();
+        		posY = this.puzzle.getBoard().getValue(r, c).getPos().getY();
+        		number = Integer.toString(this.puzzle.getBoard().getValue(r, c).getIDPoke());
+        		g2d.setColor(Color.BLACK);
+        		g2d.drawString(number, posX, posY);
         	}
         }
 	}

@@ -8,7 +8,7 @@ public class PokeVal {
 	public PokeVal(int ID, String name, Position pos){
 		this.IDPoke = ID;
 		this.nameImg = name;
-		this.setPos(pos);
+		this.pos = pos;
 	}
 
 	public int getIDPoke() {

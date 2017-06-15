@@ -5,11 +5,13 @@ import java.util.ArrayList;
 public class SudokuBoard extends Matrix {
 	
 	private Matrix board;
+	private Position[][] positions;
 	private static final int WIDTH = 640;
 	private static final int HEIGHT = 640;
 	
 	public SudokuBoard(){
 		this.board = new Matrix();
+		this.positions = new Position[9][9];
 		int[][] auxMat=new int[][]{
 			{5,3,4,6,7,8,9,1,2},
 			{6,7,2,1,9,5,3,4,8},
@@ -26,7 +28,7 @@ public class SudokuBoard extends Matrix {
 		{
 			for (int c=0;c<this.board.COLUMNS;c++)
 			{
-				this.board.values[r][c] = new PokeVal(0,"",null);
+				this.board.values[r][c] = new PokeVal(0,"");
 				this.board.values[r][c].setIDPoke(auxMat[r][c]);
 			}
 		}
@@ -47,7 +49,8 @@ public class SudokuBoard extends Matrix {
 			for (int c=0;c<this.board.COLUMNS;c++)
 			{
 				Position cell = AuxList.get(0);
-				this.board.values[c][r].setPos(cell);
+				this.positions[c][r] = new Position(0,0);
+				this.positions[c][r].setPosition(cell);
 				AuxList.remove(0);
 			}
 		}
@@ -72,6 +75,14 @@ public class SudokuBoard extends Matrix {
 
 	public void setBoard(Matrix board) {
 		this.board = board;
+	}
+	
+	public Position getPosition(int x, int y){
+		return (this.positions[x][y]);
+	}
+	
+	public void setPosition(Position[][] pos){
+		this.positions = pos;
 	}
 	
 	public void rotate()
@@ -178,7 +189,7 @@ public class SudokuBoard extends Matrix {
 		{
 			temp = ListAux.get(0);
 			this.board.setValue(r, columns+column2, temp);
-			this.board.values[r][columns+column2] = temp;
+			//this.board.values[r][columns+column2] = temp;
 			ListAux.remove(0);
 		}
 	}

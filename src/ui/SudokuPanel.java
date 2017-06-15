@@ -82,8 +82,8 @@ public class SudokuPanel extends JPanel {
         {
         	for (int c = 0;c<COLUMNS;c++)
         	{
-        		posX = this.puzzle.getBoard().getValue(r, c).getPos().getX();
-        		posY = this.puzzle.getBoard().getValue(r, c).getPos().getY();
+        		posX = this.puzzle.getPosition(r,c).getX();
+        		posY = this.puzzle.getPosition(r,c).getY();
         		number = Integer.toString(this.puzzle.getBoard().getValue(r, c).getIDPoke());
         		g2d.setColor(Color.BLACK);
         		g2d.drawString(number, posX, posY);

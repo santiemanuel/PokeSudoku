@@ -10,6 +10,15 @@ public class Position {
 		this.y = Y;
 	}
 	
+	public Position getPosition(){
+		return (this);
+	}
+	
+	public void setPosition(Position pos){
+		this.x = pos.x;
+		this.y = pos.y;
+	}
+	
 	public int getX() {
 		return x;
 	}

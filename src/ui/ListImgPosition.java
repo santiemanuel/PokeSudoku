@@ -7,7 +7,9 @@ public class ListImgPosition {
 	private static final int WIDTH = 640;
 	private static final int HEIGHT = 640;
 	
-	public ArrayList<Position> getListPosition(){
+	private ArrayList<Position> position;
+	
+	public ListImgPosition(){
 		
 		ArrayList<Position> myList = new ArrayList<Position>();
 		for (int x = 0; x <= WIDTH; x+=80)
@@ -19,7 +21,17 @@ public class ListImgPosition {
 			}
 		}
 		
-		return (myList);
+		this.position = myList;
 	}
+
+	public ArrayList<Position> getPosition() {
+		return position;
+	}
+
+	public void setPosition(ArrayList<Position> position) {
+		this.position = position;
+	}
+	
+	
 
 }

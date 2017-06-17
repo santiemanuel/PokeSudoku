@@ -10,22 +10,11 @@ public class MainTest {
 		
 		System.out.println();
 		
-		PokeVal val1 = new PokeVal(2,"");
-		PokeVal val2 = new PokeVal(5,"");
-		
-		sudo.SwapVals(val1, val2);
-		
-		sudo.showSudokuMatrix();
+		sudo.SwapColumns(0, 1, 0);
 		
 		System.out.println();
 		
-		//sudo.rotate();
-		
-		sudo.SwapColumns(0, 1, 1);
-		
 		sudo.showSudokuMatrix();
-		
-		System.out.println();
 		
 		
 		

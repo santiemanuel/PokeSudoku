@@ -1,17 +1,46 @@
 package utils;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class SudokuBoard extends Matrix {
 	
 	private Matrix board;
 	private Position[][] positions;
+	private ArrayList<Integer> newnumbers;
 	private static final int WIDTH = 640;
 	private static final int HEIGHT = 640;
+	private static final int SUDOKUSIZE = 9;
+	
+	private ArrayList<Integer> generateMyNumbers(){
+		Random random = new Random();
+		int genNumber;
+		
+		ArrayList<Integer> auxList = new ArrayList<Integer>();
+		
+		while (auxList.size() < 9){
+			genNumber = random.nextInt(150)+1;
+			if (!auxList.contains(genNumber)){
+				auxList.add(genNumber);
+			}
+		}
+		
+		return(auxList);
+	}
+	
+	private void loadBoard(int r, int c, int[][] auxMat){
+		int auxNum = this.newnumbers.get(auxMat[r][c]-1);
+		String auxStr = Integer.toString(auxNum)+".png";
+		this.board.values[r][c] = new PokeVal(auxNum,auxStr);
+	}
+	
 	
 	public SudokuBoard(){
+		
+		this.newnumbers = new ArrayList<Integer>();
+		this.newnumbers = generateMyNumbers();
 		this.board = new Matrix();
-		this.positions = new Position[9][9];
+		this.positions = new Position[SUDOKUSIZE][SUDOKUSIZE];
 		int[][] auxMat=new int[][]{
 			{5,3,4,6,7,8,9,1,2},
 			{6,7,2,1,9,5,3,4,8},
@@ -28,8 +57,7 @@ public class SudokuBoard extends Matrix {
 		{
 			for (int c=0;c<this.board.COLUMNS;c++)
 			{
-				this.board.values[r][c] = new PokeVal(0,"");
-				this.board.values[r][c].setIDPoke(auxMat[r][c]);
+				loadBoard(r, c, auxMat);  
 			}
 		}
 		
@@ -54,7 +82,7 @@ public class SudokuBoard extends Matrix {
 				AuxList.remove(0);
 			}
 		}
-		
+			
 	}
 	
 	public void showSudokuMatrix(){
@@ -67,6 +95,10 @@ public class SudokuBoard extends Matrix {
 			System.out.println();
 		}
 		
+	}
+	
+	public ArrayList<Integer> getNewnumbers(){
+		return (this.newnumbers);
 	}
 
 	public Matrix getBoard() {

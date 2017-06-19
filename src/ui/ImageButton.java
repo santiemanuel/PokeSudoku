@@ -4,46 +4,22 @@ package ui;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.util.ArrayList;
-import java.util.Random;
 
 import javax.swing.ImageIcon;
 
-import utils.Position;
 import utils.SudokuBoard;
 
 public class ImageButton {
 	
 	private ArrayList<ImageButton> myimages;
 	private ArrayList<ImageIcon> imagelist;
-	private Position[][] imagePosition;
 	private ImageIcon[][] imageMatrix;
 	String mypath = "C:\\Users\\SANTIAGO\\Documents\\Shuffle-sprites\\";
 	private ImageIcon myimage;
-	Random Rx,Ry;
 	
-	public ImageButton(){
-		
-		imagePosition = new Position[9][9];
-		ListImgPosition myList = new ListImgPosition();
-		int index = 0;
-
-        for (int r = 0;r<9;r++)
-        {
-        	for (int c = 0;c<9;c++)
-        	{
-        		this.imagePosition[r][c] = myList.getPosition().get(index);
-        		index++;
-         	}
-        }
-		
-
-	}	
 	
 	public ImageButton(SudokuBoard puzzle){
-		this();
 		
-		Rx = new Random();
-		Ry = new Random();
 		imageMatrix = new ImageIcon[9][9];
 		ArrayList<Integer> myimages = new ArrayList<Integer>();
 		myimages = puzzle.getNewnumbers();
@@ -77,9 +53,6 @@ public class ImageButton {
 		return (this.imageMatrix);
 	}
 	
-	public Position[][] getImagePosition(){
-		return (this.imagePosition);
-	}
 	
 	public ArrayList<ImageIcon> getImages(){
 		return (this.imagelist);
@@ -108,7 +81,7 @@ public class ImageButton {
 	}
 	
 	public void paint(Graphics2D g, SudokuPanel mypanel, int r, int c){
-		this.imageMatrix[r][c].paintIcon(mypanel, g, this.imagePosition[c][r].getX()+10, this.imagePosition[c][r].getY()+5);
+		this.imageMatrix[r][c].paintIcon(mypanel, g, 0, 0);
 	}
 
 }

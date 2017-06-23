@@ -3,7 +3,7 @@ package utils;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class SudokuBoard extends Matrix {
+public abstract class SudokuBoard extends Matrix {
 	
 	private Matrix board;
 	private ArrayList<Integer> newnumbers;
@@ -14,7 +14,8 @@ public class SudokuBoard extends Matrix {
 		
 		ArrayList<Integer> auxList = new ArrayList<Integer>();
 		
-		while (auxList.size() < 9){
+		auxList.add(0);
+		while (auxList.size() < 10){
 			genNumber = random.nextInt(150)+1;
 			if (!auxList.contains(genNumber)){
 				auxList.add(genNumber);
@@ -133,7 +134,6 @@ public class SudokuBoard extends Matrix {
 			row = AuxPos.getX();
 			column = AuxPos.getY();
 			this.board.setValue(row, column, new PokeVal(cellval,cellval.toString()+".png"));
-			//this.board.values[row][column] = value2;
 		}
 		
 		while(!cellsSecond.isEmpty()){
@@ -143,7 +143,6 @@ public class SudokuBoard extends Matrix {
 			row = AuxPos.getX();
 			column = AuxPos.getY();
 			this.board.setValue(row, column, new PokeVal(cellval,cellval.toString()+".png"));
-			//this.board.values[row][column] = value1;
 		}
 		
 	}
@@ -167,7 +166,6 @@ public class SudokuBoard extends Matrix {
 		{
 			temp = ListAux.get(0);
 			this.board.setValue(rows+row2, c, temp);
-			//this.board.values[rows+row2-1][c] = temp;
 			ListAux.remove(0);
 		}
 		
@@ -193,7 +191,6 @@ public class SudokuBoard extends Matrix {
 		{
 			temp = ListAux.get(0);
 			this.board.setValue(r, columns+column2, temp);
-			//this.board.values[r][columns+column2] = temp;
 			ListAux.remove(0);
 		}
 	}

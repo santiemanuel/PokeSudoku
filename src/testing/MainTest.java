@@ -6,7 +6,7 @@ import utils.*;
 public class MainTest {
 
 	public static void main(String[] args) {
-		SudokuBoard sudo = new SudokuBoard();
+		SudokuBoard sudo = new SudokuGen();
 		ArrayList<Integer> numbers = new ArrayList<Integer>();
 		numbers = sudo.getNewnumbers();
 		int index = 0;

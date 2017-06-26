@@ -16,9 +16,13 @@ import ui.ImageButton;
 import ui.SudokuPanel;
 import utils.SudokuGen;
 
-@SuppressWarnings("serial")
+
 public class GameFrame extends JFrame {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private SudokuPanel sPanel;
 	private ButtonPanel bPanel;
 	private JPanel lPanel, windowPanel;
@@ -29,7 +33,8 @@ public class GameFrame extends JFrame {
 	private static int HEIGHT;
 	
 	public GameFrame(){
-			
+		
+		this.setTitle("PokeSudoku");
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setResolution();
 		this.windowPanel = new JPanel(new BorderLayout());
@@ -105,8 +110,9 @@ public class GameFrame extends JFrame {
 			@Override
 			public void run(){
 				GameFrame frame = new GameFrame();
-				frame.setVisible(true);
 				frame.pack();
+				frame.setLocationRelativeTo(null);
+				frame.setVisible(true);
 			}
 		});
 

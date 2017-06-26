@@ -3,6 +3,7 @@ package ui;
 
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.net.URL;
 import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
@@ -18,7 +19,6 @@ public class ImageButton {
 	private ImageIcon marked;
 	private static int ROWS = 9;
 	private static int COLUMNS = 9;
-	String mypath = "img\\";
 	private ImageIcon myimage;
 	private int WIDTH;
 	
@@ -33,17 +33,19 @@ public class ImageButton {
 		this.imagelist = new ArrayList<ImageIcon>();
 		Image img, newimg;
 		ImageIcon icon;
+		URL url = null;
 		
 		for (int i=0;i<=9;i++){
-			icon = new ImageIcon(mypath+Integer.toString(myimagesid.get(i))+".png");
+			url = getClass().getResource("/"+Integer.toString(myimagesid.get(i))+".png");
+			icon = new ImageIcon(url);
 			img = icon.getImage();
 			newimg = img.getScaledInstance(this.WIDTH, this.WIDTH, Image.SCALE_SMOOTH);
 			icon.setImage(newimg);
 			this.imagelist.add(icon);
 			
 		}
-		
-		icon = new ImageIcon(mypath+"marked.png");
+		url = ImageButton.class.getResource("/marked.png");
+		icon = new ImageIcon(url);
 		img = icon.getImage();
 		newimg = img.getScaledInstance(this.WIDTH*2, this.WIDTH*2, Image.SCALE_SMOOTH);
 		icon.setImage(newimg);

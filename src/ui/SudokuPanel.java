@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.net.URL;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -18,11 +19,13 @@ import javax.swing.JPanel;
 
 import utils.SudokuGen;
 
-@SuppressWarnings("serial")
 public class SudokuPanel extends JPanel {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private ImageButton myimages;
-	private JLabel mark;
 	private Image background, sudomatrix;
 	String mypath = "img\\";
 	private SudokuGen puzzle;
@@ -34,20 +37,20 @@ public class SudokuPanel extends JPanel {
 	private int HEIGHT;
 
 	public SudokuPanel(int WIDTH, int HEIGHT){
-		
-		this.mark = new JLabel("");
-		ImageIcon ico = new ImageIcon((mypath+"marked.png"));
-		this.mark.setIcon(ico);
-		
+				
 		this.WIDTH = WIDTH;
 		this.HEIGHT = HEIGHT;
 		
 		this.setLayout(new GridLayout(9,9,0,0));
 		this.selectedLabel = new Point(0,0);
-		ico = new ImageIcon((mypath+"bg.png"));
+		URL url = null;
+		url = getClass().getResource("/bg.png");		
+		ImageIcon ico = new ImageIcon(url);
 		background = ico.getImage();
 		mylabels = new JLabel[ROWS][COLUMNS];
-		ico = new ImageIcon((mypath+"sudoku.png"));
+		
+		url = getClass().getResource("/sudoku.png");
+		ico = new ImageIcon(url);
 		sudomatrix = ico.getImage();
 		this.setPreferredSize(new Dimension(WIDTH,HEIGHT));
 		for (int i=0;i<ROWS*COLUMNS;i++)

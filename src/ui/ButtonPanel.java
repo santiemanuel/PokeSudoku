@@ -1,30 +1,39 @@
 package ui;
 
 import java.awt.GridLayout;
-import java.awt.Image;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-import utils.SudokuBoard;
+import utils.SudokuGen;
 
 public class ButtonPanel extends JPanel {
 	
 	private static final long serialVersionUID = 1L;
 	
 	private JButton[] buttons;
-	public ButtonPanel(SudokuBoard puzzle, ImageButton images){
+	public ButtonPanel(SudokuGen puzzle, ImageButton images, SudokuPanel sPanel){
 		
 		buttons = new JButton[puzzle.getNewnumbers().size()];
 		
 		
-		this.setLayout(new GridLayout(1,9,0,0));
+		this.setLayout(new GridLayout(9,1,5,5));
 		for (int i=1;i<images.getImages().size();i++){
-			buttons[i] = new JButton();
-			buttons[i].setIcon( new ImageIcon(images.getImages().get(i).getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH)));
+			ImageIcon image = new ImageIcon(images.getImages().get(i).getImage());
+			buttons[i] = createMouseListener(image, i, puzzle, sPanel);
 			this.add(buttons[i]);
 		}
+		
+	}
+	
+	private JButton createMouseListener(ImageIcon image, int i, SudokuGen puzzle, SudokuPanel sPanel){
+		JButton button = new JButton();
+		button.setIcon(image);
+		button.setActionCommand(Integer.toString(puzzle.getNewnumbers().get(i)));
+		button.addActionListener(sPanel.new ButtonActionListener());
+		return button;
+		
 		
 	}
 

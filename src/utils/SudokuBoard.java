@@ -26,7 +26,7 @@ public abstract class SudokuBoard extends Matrix {
 	}
 	
 	private void loadBoard(int r, int c, int[][] auxMat){
-		int auxNum = this.newnumbers.get(auxMat[r][c]-1);
+		int auxNum = this.newnumbers.get(auxMat[r][c]);
 		String auxStr = Integer.toString(auxNum)+".png";
 		this.board.values[r][c] = new PokeVal(auxNum,auxStr);
 	}
@@ -103,8 +103,6 @@ public abstract class SudokuBoard extends Matrix {
 	public void SwapVals(int value1, int value2)
 
 	{
-		value1--;
-		value2--;
 		ArrayList<Position> cellsFirst = new ArrayList<Position>();
 		ArrayList<Position> cellsSecond = new ArrayList<Position>();
 		int row,column;

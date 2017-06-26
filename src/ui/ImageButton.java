@@ -6,7 +6,6 @@ import java.awt.Image;
 import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
-import javax.swing.JLabel;
 
 import utils.SudokuBoard;
 
@@ -14,30 +13,41 @@ public class ImageButton {
 	
 	private ArrayList<ImageButton> myimages;
 	private ArrayList<ImageIcon> imagelist;
+	private ArrayList<Integer> myimagesid;
 	private ImageIcon[][] imageMatrix;
+	private ImageIcon marked;
 	private static int ROWS = 9;
 	private static int COLUMNS = 9;
-	String mypath = "C:\\Users\\SANTIAGO\\Documents\\Shuffle-sprites\\";
+	String mypath = "img\\";
 	private ImageIcon myimage;
+	private int WIDTH;
 	
 	
-	public ImageButton(SudokuBoard puzzle){
+	public ImageButton(SudokuBoard puzzle, int WIDTH){
 		
-		imageMatrix = new ImageIcon[9][9];
-		ArrayList<Integer> myimages = new ArrayList<Integer>();
-		myimages = puzzle.getNewnumbers();
+		if (WIDTH > 600) this.WIDTH = 64;
+		else this.WIDTH = 48;
+		imageMatrix = new ImageIcon[ROWS][COLUMNS];
+		this.myimagesid = new ArrayList<Integer>();
+		this.myimagesid = puzzle.getNewnumbers();
 		this.imagelist = new ArrayList<ImageIcon>();
 		Image img, newimg;
 		ImageIcon icon;
 		
 		for (int i=0;i<=9;i++){
-			icon = new ImageIcon(mypath+Integer.toString(myimages.get(i))+".png");
+			icon = new ImageIcon(mypath+Integer.toString(myimagesid.get(i))+".png");
 			img = icon.getImage();
-			newimg = img.getScaledInstance(64, 64, Image.SCALE_SMOOTH);
+			newimg = img.getScaledInstance(this.WIDTH, this.WIDTH, Image.SCALE_SMOOTH);
 			icon.setImage(newimg);
 			this.imagelist.add(icon);
 			
 		}
+		
+		icon = new ImageIcon(mypath+"marked.png");
+		img = icon.getImage();
+		newimg = img.getScaledInstance(this.WIDTH*2, this.WIDTH*2, Image.SCALE_SMOOTH);
+		icon.setImage(newimg);
+		this.marked = icon;
 		
 		for (int i=0;i<ROWS*COLUMNS;i++)
 		{
@@ -49,6 +59,19 @@ public class ImageButton {
 		}
 		
 		
+	}
+	
+	public void setImageCell(int row, int col, int value){
+		int index = this.myimagesid.indexOf(value);
+		this.imageMatrix[row][col] = this.imagelist.get(index);
+	}
+	
+	public void setMarkedCell(int row, int col){
+		this.imageMatrix[row][col] = this.marked;
+	}
+	
+	public ImageIcon getMarkedCell(){
+		return (this.marked);
 	}
 	
 	

@@ -16,7 +16,7 @@ public abstract class SudokuBoard extends Matrix {
 		
 		auxList.add(0);
 		while (auxList.size() < 10){
-			genNumber = random.nextInt(150)+1;
+			genNumber = random.nextInt(377)+1;
 			if (!auxList.contains(genNumber)){
 				auxList.add(genNumber);
 			}

@@ -16,7 +16,7 @@ public class ImageButton {
 	private ArrayList<ImageIcon> imagelist;
 	private ArrayList<Integer> myimagesid;
 	private ImageIcon[][] imageMatrix;
-	private ImageIcon marked;
+	private ImageIcon marked, pokebg;
 	private static int ROWS = 9;
 	private static int COLUMNS = 9;
 	private ImageIcon myimage;
@@ -47,9 +47,17 @@ public class ImageButton {
 		url = ImageButton.class.getResource("/marked.png");
 		icon = new ImageIcon(url);
 		img = icon.getImage();
-		newimg = img.getScaledInstance(this.WIDTH*2, this.WIDTH*2, Image.SCALE_SMOOTH);
+		newimg = img.getScaledInstance(this.WIDTH+20, this.WIDTH+20, Image.SCALE_SMOOTH);
 		icon.setImage(newimg);
 		this.marked = icon;
+		
+		
+		url = ImageButton.class.getResource("/poke.png");
+		icon = new ImageIcon(url);
+		img = icon.getImage();
+		newimg = img.getScaledInstance(this.WIDTH+10, this.WIDTH+10, Image.SCALE_SMOOTH);
+		icon.setImage(newimg);
+		this.pokebg = icon;
 		
 		for (int i=0;i<ROWS*COLUMNS;i++)
 		{
@@ -76,9 +84,17 @@ public class ImageButton {
 		return (this.marked);
 	}
 	
+	public ImageIcon getPokeCell(){
+		return (this.pokebg);
+	}
+	
 	
 	public ImageIcon[][] getImageMatrix(){
 		return (this.imageMatrix);
+	}
+	
+	public ImageIcon getImageAt(int r, int c){
+		return (this.imageMatrix[r][c]);
 	}
 	
 	

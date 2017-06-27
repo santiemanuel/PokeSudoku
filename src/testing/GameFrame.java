@@ -8,9 +8,11 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import ui.BackgroundPanel;
 import ui.ButtonPanel;
 import ui.ImageButton;
 import ui.SudokuPanel;
@@ -25,7 +27,8 @@ public class GameFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private SudokuPanel sPanel;
 	private ButtonPanel bPanel;
-	private JPanel lPanel, windowPanel;
+	private JPanel windowPanel, bgPanel;
+	private JLayeredPane lp;
 	private ImageButton images;
 	private SudokuGen puzzle;
 	private JButton mybutton;
@@ -37,15 +40,19 @@ public class GameFrame extends JFrame {
 		this.setTitle("PokeSudoku");
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setResolution();
+		
+		this.lp = new JLayeredPane();
+		this.lp.setPreferredSize(new Dimension(WIDTH,HEIGHT));
+		this.lp.setMinimumSize(new Dimension(WIDTH,HEIGHT));
+		
 		this.windowPanel = new JPanel(new BorderLayout());
-		this.lPanel = new JPanel();
-		lPanel.setPreferredSize(new Dimension(WIDTH,HEIGHT));
-		lPanel.setMinimumSize(new Dimension(WIDTH,HEIGHT));
-		lPanel.setMaximumSize(new Dimension(WIDTH,HEIGHT));
-	
 		windowPanel.setPreferredSize(new Dimension(WIDTH+100,HEIGHT+30));		
 		windowPanel.setMinimumSize(new Dimension(WIDTH+100,HEIGHT+30));
+	
 		this.setResizable(false);
+		
+		this.bgPanel = new BackgroundPanel(WIDTH,HEIGHT);
+		this.bgPanel.setSize(new Dimension(WIDTH,HEIGHT));
 		
 		mybutton = new JButton("Nuevo juego");
 	    mybutton.addActionListener(new ActionListener()
@@ -59,15 +66,19 @@ public class GameFrame extends JFrame {
 	    
 		this.puzzle = new SudokuGen();
 		this.images = new ImageButton(puzzle, WIDTH);
-		this.sPanel = new SudokuPanel(WIDTH, HEIGHT);
+		
+		this.sPanel = new SudokuPanel(WIDTH, HEIGHT, this.images);
+		this.sPanel.setOpaque(false);
 		this.bPanel = new ButtonPanel(puzzle, images, sPanel);
-	    lPanel.add(this.sPanel, BorderLayout.LINE_START);
-		windowPanel.add(lPanel, BorderLayout.LINE_START);
+	    
+		this.lp.add(this.bgPanel, new Integer(1));
+		this.lp.add(this.sPanel, new Integer(2));
+	    
+		windowPanel.add(this.lp);
 		windowPanel.add(mybutton, BorderLayout.SOUTH);
 		windowPanel.add(this.bPanel, BorderLayout.LINE_END);
-		this.add(windowPanel);		
-
-	    sPanel.repaint();
+		
+		this.add(windowPanel);
 		
 		
 	}
@@ -88,15 +99,25 @@ public class GameFrame extends JFrame {
 	
 	public void rebuild(){
 	
-		lPanel.removeAll();
-		windowPanel.removeAll();
+		this.lp.removeAll();
+		this.windowPanel.removeAll();
+		
+		this.bgPanel = new BackgroundPanel(WIDTH,HEIGHT);
+		this.bgPanel.setSize(new Dimension(WIDTH,HEIGHT));
+		
 		this.puzzle = new SudokuGen();
 		this.images = new ImageButton(puzzle, WIDTH);
-		this.sPanel = new SudokuPanel(WIDTH, HEIGHT);
+		
+		this.sPanel = new SudokuPanel(WIDTH, HEIGHT, this.images);
+		this.sPanel.setOpaque(false);
+		this.sPanel.setSize(new Dimension(WIDTH, HEIGHT));
+		
 		this.bPanel = new ButtonPanel(puzzle, images, sPanel);
 		this.sPanel.newSudoku(this.puzzle, images);
-	    lPanel.add(this.sPanel, BorderLayout.LINE_START);
-		windowPanel.add(lPanel, BorderLayout.LINE_START);
+
+		this.lp.add(bgPanel, new Integer(1));
+		this.lp.add(sPanel, new Integer(2));
+		windowPanel.add(this.lp, BorderLayout.LINE_START);
 		windowPanel.add(mybutton, BorderLayout.SOUTH);
 		windowPanel.add(this.bPanel, BorderLayout.LINE_END);
 		this.add(windowPanel);

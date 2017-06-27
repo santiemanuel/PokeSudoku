@@ -11,70 +11,58 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.net.URL;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import utils.SudokuGen;
 
+@SuppressWarnings("serial")
 public class SudokuPanel extends JPanel {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private ImageButton myimages;
-	private Image background, sudomatrix;
-	String mypath = "img\\";
 	private SudokuGen puzzle;
-	private static int ROWS = 9;
-	private static int COLUMNS = 9;
+	private static final int ROWS = 9;
+	private static final int COLUMNS = 9;
 	private Point selectedLabel;
-	private JLabel[][] mylabels;
-	private int WIDTH;
-	private int HEIGHT;
+	private JPanel[][] mypanels;
 
-	public SudokuPanel(int WIDTH, int HEIGHT){
+
+	public SudokuPanel(int WIDTH, int HEIGHT, ImageButton myimages){
 				
-		this.WIDTH = WIDTH;
-		this.HEIGHT = HEIGHT;
-		
 		this.setLayout(new GridLayout(9,9,0,0));
-		this.selectedLabel = new Point(0,0);
-		URL url = null;
-		url = getClass().getResource("/bg.png");		
-		ImageIcon ico = new ImageIcon(url);
-		background = ico.getImage();
-		mylabels = new JLabel[ROWS][COLUMNS];
-		
-		url = getClass().getResource("/sudoku.png");
-		ico = new ImageIcon(url);
-		sudomatrix = ico.getImage();
+		this.mypanels = new JPanel[ROWS][COLUMNS];
+
 		this.setPreferredSize(new Dimension(WIDTH,HEIGHT));
 		for (int i=0;i<ROWS*COLUMNS;i++)
 		{
 				int row = i / ROWS;
 				int column = i % ROWS;
-				this.mylabels[row][column] = new JLabel(new ImageIcon(mypath+"0.png"));
-				this.add(this.mylabels[row][column]);
+				
+				this.mypanels[row][column] = new JPanel();
+				this.mypanels[row][column].add(new JLabel());
+				((JLabel)mypanels[row][column].getComponent(0)).setIcon(myimages.getImages().get(0));
+				this.add(this.mypanels[row][column]);
 		}
 		
 	}
 	
 	public void newSudoku(SudokuGen puzzle, ImageButton myimages){
 		this.removeAll();
-		mylabels = new JLabel[ROWS][COLUMNS];
+		this.selectedLabel = new Point();
 		this.puzzle = puzzle;
 		this.myimages = myimages;
 		for (int i=0;i<ROWS*COLUMNS;i++)
 		{
 				int row = i / ROWS;
 				int column = i % ROWS;
-				ImageIcon element = myimages.getImageMatrix()[row][column];
-				this.mylabels[row][column] = createGridLabel(element, row, column);
-				this.add(this.mylabels[row][column]);
+				ImageIcon element = this.myimages.getImageAt(row,column);
+				this.mypanels[row][column] = new JPanel();
+				this.mypanels[row][column].setOpaque(false);
+				this.mypanels[row][column].add(createGridLabel(element, row, column));
+				this.add(this.mypanels[row][column]);
 				
 		}
 
@@ -82,20 +70,23 @@ public class SudokuPanel extends JPanel {
 	
 	private JLabel createGridLabel(ImageIcon element, int r, int c){
 		JLabel lbl = new JLabel(element);
+		lbl.setHorizontalAlignment(JLabel.CENTER);
+		lbl.setVerticalAlignment(JLabel.CENTER);
+		
 		lbl.addMouseListener(new MouseAdapter(){
 			@Override
 			public void mouseClicked(MouseEvent e){
-				if (puzzle.isCellMutable(r,c)){
-					if (puzzle.getBoard().getMatrix()[selectedLabel.x][selectedLabel.y].getIDPoke() == 0){
-						mylabels[selectedLabel.x][selectedLabel.y].setIcon(myimages.getImages().get(0));
+				if (puzzle.isCellMutable(r, c)){
+					if (SwingUtilities.isLeftMouseButton(e)){
+						selectedLabel.setLocation(r, c);
 					}
-					selectedLabel.setLocation(r, c);
-					puzzle.getBoard().getMatrix()[r][c].setIDPoke(0);
-					mylabels[r][c].setIcon(myimages.getMarkedCell());
-					revalidate();
-					repaint();
+					else if (SwingUtilities.isRightMouseButton(e)){
+						puzzle.makeMove(r, c, 0);
+						((JLabel)mypanels[r][c].getComponent(0)).setIcon(myimages.getImages().get(0));
+					}
 				}
-
+				revalidate();
+				repaint();
 				
 			}
 		});
@@ -110,7 +101,8 @@ public class SudokuPanel extends JPanel {
 			if (this.puzzle.isValidMove(r, c, Integer.parseInt(buttonValue))){
 				this.puzzle.makeMove(r, c, Integer.parseInt(buttonValue));
 				myimages.setImageCell(r, c, Integer.parseInt(buttonValue));
-				this.mylabels[r][c].setIcon(myimages.getImageMatrix()[r][c]);
+				((JLabel)this.mypanels[r][c].getComponent(0)).setIcon(myimages.getImageAt(r,c));
+
 			}
 			
 			revalidate();
@@ -132,13 +124,30 @@ public class SudokuPanel extends JPanel {
 	protected void paintComponent(Graphics g) {
 		
         super.paintComponent(g);
-        g.drawImage(this.background, 0, 0, WIDTH, HEIGHT, null);
-        g.drawImage(this.sudomatrix, 5, 5, WIDTH-10, HEIGHT-10, null);
-        
+        int x,y;
+        Image img = myimages.getPokeCell().getImage();
+		for (int i=0;i<ROWS*COLUMNS;i++)
+		{
+				int row = i / ROWS;
+				int column = i % ROWS;
+				if (!this.puzzle.isCellMutable(row, column)){
+					x = mypanels[row][column].getX()+5;
+					y = mypanels[row][column].getY()+10;
+					g.drawImage(img, x, y, null);
+					
+				}
+				
+		}
+        img = myimages.getMarkedCell().getImage();
+        x = mypanels[selectedLabel.x][selectedLabel.y].getX();
+        y = mypanels[selectedLabel.x][selectedLabel.y].getY();
+        g.drawImage(img, x, y, null);
         Graphics2D g2d = (Graphics2D) g;
 
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         
 		
 	}
+	
+	
 }

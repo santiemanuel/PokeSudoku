@@ -3,8 +3,17 @@ import java.util.ArrayList;
 
 import utils.*;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class MainTest.
+ */
 public class MainTest {
 
+	/**
+	 * The main method.
+	 *
+	 * @param args the arguments
+	 */
 	public static void main(String[] args) {
 		SudokuBoard sudo = new SudokuGen();
 		ArrayList<Integer> numbers = new ArrayList<Integer>();

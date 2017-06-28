@@ -10,12 +10,28 @@ import java.net.URL;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class BackgroundPanel.
+ */
 @SuppressWarnings("serial")
 public class BackgroundPanel extends JPanel {
+	
+	/** The sudomatrix. */
 	private Image background, sudomatrix;
+	
+	/** The width. */
 	private int WIDTH;
+	
+	/** The height. */
 	private int HEIGHT;
 	
+	/**
+	 * Instantiates a new background panel.
+	 *
+	 * @param WIDTH the width of the JPanel
+	 * @param HEIGHT the height of the JPanel
+	 */
 	public BackgroundPanel(int WIDTH, int HEIGHT){
 		this.WIDTH = WIDTH;
 		this.HEIGHT = HEIGHT;
@@ -31,6 +47,9 @@ public class BackgroundPanel extends JPanel {
 		
 	}
 
+	/* (non-Javadoc)
+	 * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
+	 */
 	@Override
 	protected void paintComponent(Graphics g) {
 		

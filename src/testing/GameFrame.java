@@ -19,26 +19,50 @@ import ui.SudokuPanel;
 import utils.SudokuGen;
 
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class GameFrame.
+ */
 public class GameFrame extends JFrame {
 	
-	/**
-	 * 
-	 */
+	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
+	
+	/** The sudoku JPanel. */
 	private SudokuPanel sPanel;
+	
+	/** The Buttons JPanel. */
 	private ButtonPanel bPanel;
+	
+	/** The window and background JPanel. */
 	private JPanel windowPanel, bgPanel;
+	
+	/** The Layered Pane. */
 	private JLayeredPane lp;
+	
+	/** The ImageButton object images. */
 	private ImageButton images;
+	
+	/** The Sudoku matrix object. */
 	private SudokuGen puzzle;
-	private JButton mybutton;
+	
+	/** The mybutton. */
+	private JButton newgame;
+	
+	/** The width. */
 	private static int WIDTH;
+	
+	/** The height. */
 	private static int HEIGHT;
 	
+	/**
+	 * Instantiates a new game frame.
+	 */
 	public GameFrame(){
 		
 		this.setTitle("PokeSudoku");
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		
 		setResolution();
 		
 		this.lp = new JLayeredPane();
@@ -54,8 +78,8 @@ public class GameFrame extends JFrame {
 		this.bgPanel = new BackgroundPanel(WIDTH,HEIGHT);
 		this.bgPanel.setSize(new Dimension(WIDTH,HEIGHT));
 		
-		mybutton = new JButton("Nuevo juego");
-	    mybutton.addActionListener(new ActionListener()
+		newgame = new JButton("Nuevo juego");
+	    newgame.addActionListener(new ActionListener()
 	    {
 	      public void actionPerformed(ActionEvent e)
 	      {
@@ -75,14 +99,16 @@ public class GameFrame extends JFrame {
 		this.lp.add(this.sPanel, new Integer(2));
 	    
 		windowPanel.add(this.lp);
-		windowPanel.add(mybutton, BorderLayout.SOUTH);
-		windowPanel.add(this.bPanel, BorderLayout.LINE_END);
+		windowPanel.add(newgame, BorderLayout.SOUTH);
 		
 		this.add(windowPanel);
 		
 		
 	}
 	
+	/**
+	 * Sets the resolution.
+	 */
 	private void setResolution(){
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 		int width = (int)dim.getWidth();
@@ -97,6 +123,9 @@ public class GameFrame extends JFrame {
 		
 	}
 	
+	/**
+	 * Rebuild.
+	 */
 	public void rebuild(){
 	
 		this.lp.removeAll();
@@ -118,14 +147,21 @@ public class GameFrame extends JFrame {
 		this.lp.add(bgPanel, new Integer(1));
 		this.lp.add(sPanel, new Integer(2));
 		windowPanel.add(this.lp, BorderLayout.LINE_START);
-		windowPanel.add(mybutton, BorderLayout.SOUTH);
+		windowPanel.add(newgame, BorderLayout.SOUTH);
 		windowPanel.add(this.bPanel, BorderLayout.LINE_END);
+		
 		this.add(windowPanel);
+		
 		sPanel.revalidate();
 		sPanel.repaint();
 		
 	}
 
+	/**
+	 * The main method.
+	 *
+	 * @param args the arguments
+	 */
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable(){
 			@Override

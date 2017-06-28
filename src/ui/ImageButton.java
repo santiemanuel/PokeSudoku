@@ -8,115 +8,179 @@ import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 
-import utils.SudokuBoard;
+import utils.SudokuGen;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class ImageButton.
+ */
 public class ImageButton {
 	
+	/** The myimages. */
 	private ArrayList<ImageButton> myimages;
+	
+	/** The imagelist. */
 	private ArrayList<ImageIcon> imagelist;
+	
+	/** The myimagesid. */
 	private ArrayList<Integer> myimagesid;
+	
+	/** The image matrix. */
 	private ImageIcon[][] imageMatrix;
+	
+	/** The pokebg, marked ImageIcons. */
 	private ImageIcon marked, pokebg;
+	
+	/** The rows. */
 	private static int ROWS = 9;
+	
+	/** The columns. */
 	private static int COLUMNS = 9;
-	private ImageIcon myimage;
+	
+	/** The width of the JPanel. */
 	private int WIDTH;
 	
 	
-	public ImageButton(SudokuBoard puzzle, int WIDTH){
+	/**
+	 * Instantiates a new image button.
+	 *
+	 * @param puzzle The Sudoku matrix object
+	 * @param WIDTH The width of the Sudoku JPanel
+	 */
+	public ImageButton(SudokuGen puzzle, int WIDTH){
 		
-		if (WIDTH > 600) this.WIDTH = 64;
-		else this.WIDTH = 48;
-		imageMatrix = new ImageIcon[ROWS][COLUMNS];
-		this.myimagesid = new ArrayList<Integer>();
+		//Sets the resolution of the icons depending on the size of the JPanel 
+		if (WIDTH > 600) this.WIDTH = 64; else this.WIDTH = 48;
+		
+		this.imageMatrix = new ImageIcon[ROWS][COLUMNS];
+		
+		//Sets the ids of the images used in this puzzle
 		this.myimagesid = puzzle.getNewnumbers();
 		this.imagelist = new ArrayList<ImageIcon>();
-		Image img, newimg;
+		Image img;
 		ImageIcon icon;
 		URL url = null;
 		
+		//Loads the list of images needed to load the matrix of images
 		for (int i=0;i<=9;i++){
 			url = getClass().getResource("/"+Integer.toString(myimagesid.get(i))+".png");
 			icon = new ImageIcon(url);
-			img = icon.getImage();
-			newimg = img.getScaledInstance(this.WIDTH, this.WIDTH, Image.SCALE_SMOOTH);
-			icon.setImage(newimg);
-			this.imagelist.add(icon);
-			
+			img = icon.getImage().getScaledInstance(this.WIDTH, this.WIDTH, Image.SCALE_SMOOTH);
+			icon.setImage(img);
+			this.imagelist.add(icon);		
 		}
-		url = ImageButton.class.getResource("/marked.png");
+		
+		//Sets the icon for a marked cell
+		url = getClass().getResource("/marked.png");
 		icon = new ImageIcon(url);
-		img = icon.getImage();
-		newimg = img.getScaledInstance(this.WIDTH+20, this.WIDTH+20, Image.SCALE_SMOOTH);
-		icon.setImage(newimg);
+		img = icon.getImage().getScaledInstance(this.WIDTH+20, this.WIDTH+20, Image.SCALE_SMOOTH);
+		icon.setImage(img);
 		this.marked = icon;
 		
-		
-		url = ImageButton.class.getResource("/poke.png");
+		//Sets the icon for starting cells
+		url = getClass().getResource("/poke.png");
 		icon = new ImageIcon(url);
-		img = icon.getImage();
-		newimg = img.getScaledInstance(this.WIDTH+10, this.WIDTH+10, Image.SCALE_SMOOTH);
-		icon.setImage(newimg);
+		img = icon.getImage().getScaledInstance(this.WIDTH+10, this.WIDTH+10, Image.SCALE_SMOOTH);
+		icon.setImage(img);
 		this.pokebg = icon;
 		
+		//Loads the matrix according to the id at that (row, column)
 		for (int i=0;i<ROWS*COLUMNS;i++)
 		{
 				int row = i / ROWS;
 				int column = i % ROWS;
 				int id = puzzle.getBoard().getValue(row, column).getIDPoke();
-				setImage(puzzle, row, column, id);
-				imageMatrix[row][column] = getImage();
+				int index = puzzle.getNewnumbers().indexOf(id);
+				this.imageMatrix[row][column] = this.imagelist.get(index);
 		}
-		
-		
 	}
 	
+	/**
+	 *  Updates the image of a cell at (row, col).
+	 *
+	 * @param row The row
+	 * @param col The col
+	 * @param value The new value
+	 */
 	public void setImageCell(int row, int col, int value){
 		int index = this.myimagesid.indexOf(value);
 		this.imageMatrix[row][col] = this.imagelist.get(index);
 	}
 	
+	/**
+	 * Sets the marked cell.
+	 *
+	 * @param row The row
+	 * @param col The col
+	 */
 	public void setMarkedCell(int row, int col){
 		this.imageMatrix[row][col] = this.marked;
 	}
 	
+	/**
+	 * Gets the marked cell.
+	 *
+	 * @return The marked cell
+	 */
 	public ImageIcon getMarkedCell(){
 		return (this.marked);
 	}
 	
+	/**
+	 * Gets the poke cell.
+	 *
+	 * @return The poke cell
+	 */
 	public ImageIcon getPokeCell(){
 		return (this.pokebg);
 	}
 	
-	
+	/**
+	 * Gets the image matrix.
+	 *
+	 * @return the image matrix
+	 */
 	public ImageIcon[][] getImageMatrix(){
 		return (this.imageMatrix);
 	}
 	
+	/**
+	 * Gets the image at.
+	 *
+	 * @param r The row
+	 * @param c The column
+	 * @return the image at
+	 */
 	public ImageIcon getImageAt(int r, int c){
 		return (this.imageMatrix[r][c]);
 	}
 	
-	
-	public ArrayList<ImageIcon> getImages(){
+	/**
+	 * Gets the images.
+	 *
+	 * @return the images
+	 */
+	public ArrayList<ImageIcon> getImagelist(){
 		return (this.imagelist);
 	}
 	
-	public void setImage(SudokuBoard puzzle, int r, int c, int id){
-		
-		int index = puzzle.getNewnumbers().indexOf(id);	
-		this.myimage = this.imagelist.get(index);
-	
-	}
-	
+	/**
+	 * Gets the myimages.
+	 *
+	 * @return the myimages
+	 */
 	public ArrayList<ImageButton> getMyimages(){
 		return (this.myimages);
 	}
 	
-	public ImageIcon getImage(){
-		return (this.myimage);
-	}
-	
+	/**
+	 * Paint.
+	 *
+	 * @param g The graphics
+	 * @param mypanel The Sudoku JPanel
+	 * @param r The row
+	 * @param c The column
+	 */
 	public void paint(Graphics2D g, SudokuPanel mypanel, int r, int c){
 		this.imageMatrix[r][c].paintIcon(mypanel, g, 0, 0);
 	}

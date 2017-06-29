@@ -7,13 +7,15 @@ import java.util.Random;
 /**
  * The Class SudokuGen.
  */
-public class SudokuGen extends SudokuBoard{
+public class SudokuGen{
 
 	/** The random. */
 	private Random random;
 	
 	/** The genboard matrix. */
 	private Matrix genboard;
+	
+	private SudokuBoard myboard;
 	
 	/** The size. */
 	private final int SIZE = 9;
@@ -34,19 +36,18 @@ public class SudokuGen extends SudokuBoard{
 	 * Instantiates a new sudoku gen.
 	 */
 	public SudokuGen(){
-		super();
+		this.myboard = new SudokuBoard();
 		random = new Random();
 		this.mutable = new Boolean[SIZE][SIZE];
-		this.genboard = new Matrix(); 
-		this.genboard = super.getBoard();
+		this.genboard = this.myboard.getBoard();
 		this.setSolved(false);
 		this.setMutableCells(new ArrayList<Position>());
 		this.setLockedCells(new ArrayList<Position>());
 		for (int i=0;i<random.nextInt(LIMIT);i++){
-			super.SwapColumns(random.nextInt(3), random.nextInt(3), random.nextInt(3));
-			super.SwapRows(random.nextInt(3), random.nextInt(3), random.nextInt(3));
-			super.SwapVals(random.nextInt(9)+1, random.nextInt(9)+1);
-			if (random.nextInt(9) % 2 == 0 ) super.rotate();
+			this.genboard.SwapColumns(random.nextInt(3), random.nextInt(3), random.nextInt(3));
+			this.genboard.SwapRows(random.nextInt(3), random.nextInt(3), random.nextInt(3));
+			this.genboard.SwapVals(random.nextInt(9)+1, random.nextInt(9)+1);
+			if (random.nextInt(9) % 2 == 0 ) this.genboard.rotate();
 		}
 		initMutables();
 		removeValues();
@@ -54,6 +55,17 @@ public class SudokuGen extends SudokuBoard{
 		updateLocked();
 		loadValidvalues();
 	
+	}
+	
+	public SudokuGen(SudokuGen sudoku){
+		this.genboard = sudoku.genboard;
+		this.lockedCells = sudoku.lockedCells;
+		this.mutableCells = sudoku.mutableCells;
+		this.mutable = sudoku.mutable;
+		this.myboard = sudoku.myboard;
+		this.Solved = sudoku.Solved;
+		this.validvalues = sudoku.validvalues;
+		
 	}
 	
 	public boolean isSolved(){
@@ -70,7 +82,7 @@ public class SudokuGen extends SudokuBoard{
 	}
 	
 	/**
-	 * Inits the valid values..
+	 * Inits the valid values.
 	 */
 	@SuppressWarnings("unchecked")
 	private void initValidvalues(){
@@ -84,7 +96,7 @@ public class SudokuGen extends SudokuBoard{
 	}
 	
 	public void loadValidvalues(){
-		ArrayList<Integer> validnumbers = this.getNewnumbers();
+		ArrayList<Integer> validnumbers = this.myboard.getNewnumbers();
 		int row,col;
 		initValidvalues();
 		for (int i=0;i<this.getMutableCells().size();i++){
@@ -102,6 +114,22 @@ public class SudokuGen extends SudokuBoard{
 		}
 	}
 	
+	public Matrix getGenboard() {
+		return genboard;
+	}
+
+	public void setGenboard(Matrix genboard) {
+		this.genboard = genboard;
+	}
+
+	public SudokuBoard getMyboard() {
+		return myboard;
+	}
+
+	public void setMyboard(SudokuBoard myboard) {
+		this.myboard = myboard;
+	}
+
 	public void ShowValidvalues(int r, int c){
 		for (int j=0;j<this.validvalues[r][c].size();j++){
 			System.out.print(getValidvalue(r, c, j)+" ");
@@ -328,6 +356,9 @@ public class SudokuGen extends SudokuBoard{
 		Solved = solved;
 	}
 	
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
 	
 	
 	

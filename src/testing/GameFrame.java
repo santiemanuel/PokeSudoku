@@ -96,8 +96,7 @@ public class GameFrame extends JFrame {
 	    		getHint();
 	    	}
 	    });
-		
-	    
+		    
 		this.puzzle = new SudokuGen();
 		this.images = new ImageButton(puzzle, WIDTH);
 		
@@ -159,7 +158,8 @@ public class GameFrame extends JFrame {
 
 		this.lp.add(bgPanel, new Integer(1));
 		this.lp.add(sPanel, new Integer(2));
-		windowPanel.add(this.lp, BorderLayout.LINE_START);
+
+		this.windowPanel.add(this.lp, BorderLayout.LINE_START);
 		
 		this.buttonsPanel.add(newgame, BorderLayout.WEST);
 		this.buttonsPanel.add(hint, BorderLayout.EAST);

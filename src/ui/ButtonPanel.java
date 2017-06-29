@@ -1,6 +1,7 @@
 package ui;
 
 import java.awt.GridLayout;
+import java.awt.Image;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -30,14 +31,14 @@ public class ButtonPanel extends JPanel {
 	public ButtonPanel(SudokuGen puzzle, ImageButton images, SudokuPanel sPanel){
 		
 		//Create an array of JButton with 9 elements
-		buttons = new JButton[puzzle.getNewnumbers().size()];
+		buttons = new JButton[puzzle.getMyboard().getNewnumbers().size()];
 		
 		//Sets the layout to a 9*1 GridLayout with padding 5
 		this.setLayout(new GridLayout(9,1,5,5));
 		
 		//Load an image, create the MouseListener and add it at index i
 		for (int i=1;i<images.getImagelist().size();i++){
-			ImageIcon image = new ImageIcon(images.getImagelist().get(i).getImage());
+			ImageIcon image = new ImageIcon(images.getImagelist().get(i).getImage().getScaledInstance(64, 64, Image.SCALE_SMOOTH));
 			buttons[i] = createMouseListener(image, i, puzzle, sPanel);
 			this.add(buttons[i]);
 		}
@@ -56,7 +57,7 @@ public class ButtonPanel extends JPanel {
 	private JButton createMouseListener(ImageIcon image, int i, SudokuGen puzzle, SudokuPanel sPanel){
 		JButton button = new JButton();
 		button.setIcon(image);
-		button.setActionCommand(Integer.toString(puzzle.getNewnumbers().get(i)));
+		button.setActionCommand(Integer.toString(puzzle.getMyboard().getNewnumbers().get(i)));
 		button.addActionListener(sPanel.new ButtonActionListener());
 		return button;
 		

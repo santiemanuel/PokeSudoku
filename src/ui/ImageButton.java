@@ -55,7 +55,7 @@ public class ImageButton {
 		this.imageMatrix = new ImageIcon[ROWS][COLUMNS];
 		
 		//Sets the ids of the images used in this puzzle
-		this.myimagesid = puzzle.getNewnumbers();
+		this.myimagesid = puzzle.getMyboard().getNewnumbers();
 		this.imagelist = new ArrayList<ImageIcon>();
 		Image img;
 		ImageIcon icon;
@@ -65,7 +65,7 @@ public class ImageButton {
 		for (int i=0;i<=9;i++){
 			url = getClass().getResource("/"+Integer.toString(myimagesid.get(i))+".png");
 			icon = new ImageIcon(url);
-			img = icon.getImage().getScaledInstance(this.WIDTH, this.WIDTH, Image.SCALE_SMOOTH);
+			img = icon.getImage().getScaledInstance(this.WIDTH+15, this.WIDTH+15, Image.SCALE_SMOOTH);
 			icon.setImage(img);
 			this.imagelist.add(icon);		
 		}
@@ -73,14 +73,14 @@ public class ImageButton {
 		//Sets the icon for a marked cell
 		url = getClass().getResource("/marked.png");
 		icon = new ImageIcon(url);
-		img = icon.getImage().getScaledInstance(this.WIDTH+20, this.WIDTH+20, Image.SCALE_SMOOTH);
+		img = icon.getImage().getScaledInstance(this.WIDTH, this.WIDTH, Image.SCALE_SMOOTH);
 		icon.setImage(img);
 		this.marked = icon;
 		
 		//Sets the icon for starting cells
 		url = getClass().getResource("/poke.png");
 		icon = new ImageIcon(url);
-		img = icon.getImage().getScaledInstance(this.WIDTH+10, this.WIDTH+10, Image.SCALE_SMOOTH);
+		img = icon.getImage().getScaledInstance(this.WIDTH-10, this.WIDTH-10, Image.SCALE_SMOOTH);
 		icon.setImage(img);
 		this.pokebg = icon;
 		
@@ -89,8 +89,8 @@ public class ImageButton {
 		{
 				int row = i / ROWS;
 				int column = i % ROWS;
-				int id = puzzle.getBoard().getValue(row, column).getIDPoke();
-				int index = puzzle.getNewnumbers().indexOf(id);
+				int id = puzzle.getMyboard().getBoard().getValue(row, column).getIDPoke();
+				int index = puzzle.getMyboard().getNewnumbers().indexOf(id);
 				this.imageMatrix[row][column] = this.imagelist.get(index);
 		}
 	}

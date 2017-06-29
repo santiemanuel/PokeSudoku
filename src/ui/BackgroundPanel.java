@@ -54,8 +54,8 @@ public class BackgroundPanel extends JPanel {
 	protected void paintComponent(Graphics g) {
 		
         super.paintComponent(g);
-        g.drawImage(this.background, 0, 0, WIDTH, HEIGHT, null);
-        g.drawImage(this.sudomatrix, 5, 5, WIDTH-10, HEIGHT-10, null);
+       g.drawImage(this.background, 0, 0, WIDTH, HEIGHT, null);
+       g.drawImage(this.sudomatrix, 5, 5, WIDTH-10, HEIGHT-10, null);
         
         Graphics2D g2d = (Graphics2D) g;
 

@@ -1,10 +1,16 @@
 package ui;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Image;
+import java.awt.Insets;
 import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
@@ -13,6 +19,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -48,6 +55,8 @@ public class SudokuPanel extends JPanel {
 	
 	/** The mypanels. */
 	private JPanel[][] mypanels;
+	
+	private Color labelBG;
 
 
 	/**
@@ -60,12 +69,16 @@ public class SudokuPanel extends JPanel {
 	public SudokuPanel(int WIDTH, int HEIGHT, ImageButton myimages){
 		
 		//Sets the layout to a 9*9 GridLayout with padding 0
-		this.setLayout(new GridLayout(ROWS,COLUMNS,0,0));
+		//this.setLayout(new GridLayout(ROWS,COLUMNS,0,0));
+		this.setLayout(new GridBagLayout());
+		GridBagConstraints cons = new GridBagConstraints();
 		
 		//Creates a matrix of JPanel
 		this.mypanels = new JPanel[ROWS][COLUMNS];
 
-		this.setPreferredSize(new Dimension(WIDTH,HEIGHT));
+		//this.setPreferredSize(new Dimension(576,576));
+		
+		this.labelBG = new Color(0,64,128,128);
 		
 		//Sets all cells to zero
 		for (int i=0;i<ROWS*COLUMNS;i++)
@@ -74,9 +87,14 @@ public class SudokuPanel extends JPanel {
 				int col = i % ROWS;
 				
 				this.mypanels[row][col] = new JPanel();
+				this.mypanels[row][col].setLayout(new BorderLayout());
 				this.mypanels[row][col].add(new JLabel());
 				((JLabel)mypanels[row][col].getComponent(0)).setIcon(myimages.getImagelist().get(0));
-				this.add(this.mypanels[row][col]);
+				cons.weightx = cons.weighty = 1.0;
+				cons.gridx = row;
+				cons.gridy = col;
+				cons.fill = GridBagConstraints.BOTH;
+				this.add(this.mypanels[row][col], cons);
 		}
 		
 	}
@@ -89,10 +107,14 @@ public class SudokuPanel extends JPanel {
 	 */
 	public void newSudoku(SudokuGen puzzle, ImageButton myimages){
 		this.removeAll();
+		GridBagConstraints cons = new GridBagConstraints();
 		this.selPanel = new Point();
 		this.puzzle = puzzle;
 		this.myimages = myimages;
 		this.lockedcells = puzzle.getLockedCells();
+		Insets Margin = new Insets(0, 0, 0, 0);
+		cons.insets = Margin;
+
 		
 		//Adds a JLabel to each JPanel at (row, col)
 		for (int i=0;i<ROWS*COLUMNS;i++)
@@ -103,9 +125,14 @@ public class SudokuPanel extends JPanel {
 				this.mypanels[row][col] = new JPanel();
 				this.mypanels[row][col].setOpaque(false);
 				this.mypanels[row][col].add(createGridLabel(element, row, col));
-				this.add(this.mypanels[row][col]);
+				cons.weightx = cons.weighty = 1.0;
+				cons.gridx = row;
+				cons.gridy = col;
+				cons.fill = GridBagConstraints.BOTH;
+				this.add(this.mypanels[row][col], cons);
 				
 		}
+		this.setPreferredSize(this.getPreferredSize());
 
 	}
 	
@@ -128,8 +155,12 @@ public class SudokuPanel extends JPanel {
 				//Checks if cell is editable
 				if (puzzle.isCellMutable(r, c)){
 					//If left click, sets the location to put an icon there
+					cleanPanels();
 					if (SwingUtilities.isLeftMouseButton(e)){
 						selPanel.setLocation(r, c);
+						paintRow(r);
+						paintColumn(c);
+						paintBox(r,c);
 					}
 					//If right click, removes the image and sets the cell value to zero
 					else if (SwingUtilities.isRightMouseButton(e)){
@@ -201,6 +232,7 @@ public class SudokuPanel extends JPanel {
 			JOptionPane.showMessageDialog(null, "El puzzle ya esta resuelto!");
 		}
 		else{
+			cleanPanels();
 			Position cellHint = this.puzzle.getFirstAvailableMove();
 			if (cellHint != null){
 				int row,col;
@@ -210,11 +242,53 @@ public class SudokuPanel extends JPanel {
 				Integer value = this.puzzle.getValidvalue(row, col, 0);
 				msgButtonActionListener(value);
 				
+				paintRow(row);
+				paintColumn(col);
+				paintBox(row,col);
+				
 				if (puzzle.getSolved()) JOptionPane.showMessageDialog(null, "Felicidades! Resolviste el puzzle.");
 			}else JOptionPane.showMessageDialog(null, "El puzzle no tiene solucion unica.");
 		}
 	}
 
+	public void paintRow(int row){
+		for (int c=0; c<ROWS;c++){
+			((JLabel)mypanels[row][c].getComponent(0)).setOpaque(true);
+			((JLabel)mypanels[row][c].getComponent(0)).setBackground(labelBG);
+		}
+	}
+	
+	public void paintColumn(int col){
+		for (int r=0; r<COLUMNS;r++){
+			((JLabel)mypanels[r][col].getComponent(0)).setOpaque(true);
+			((JLabel)mypanels[r][col].getComponent(0)).setBackground(labelBG);
+		}
+	}
+	
+	public void paintBox(int row, int col){
+		int boxRow = row / 3;
+		int boxCol = col / 3;
+		
+		int startRow = (boxRow * 3);
+		int startCol = (boxCol * 3);
+		
+		for (int r = startRow; r<= (startRow+3)-1;r++){
+			for (int c = startCol; c<= (startCol+3)-1;c++){
+				((JLabel)mypanels[r][c].getComponent(0)).setOpaque(true);
+				((JLabel)mypanels[r][c].getComponent(0)).setBackground(labelBG);
+			}
+		}
+	}
+	
+	public void cleanPanels(){
+		for (int r = 0; r< ROWS ;r++){
+			for (int c = 0; c< COLUMNS;c++){
+				((JLabel)mypanels[r][c].getComponent(0)).setOpaque(false);
+			}
+		}
+	}
+	
+	
 	
 	/* (non-Javadoc)
 	 * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
@@ -238,8 +312,8 @@ public class SudokuPanel extends JPanel {
 		
 		//Draws the marked cell state at the cell
         img = myimages.getMarkedCell().getImage();
-        x = mypanels[selPanel.x][selPanel.y].getX();
-        y = mypanels[selPanel.x][selPanel.y].getY();
+        x = mypanels[selPanel.x][selPanel.y].getX()+10;
+        y = mypanels[selPanel.x][selPanel.y].getY()+10;
         g.drawImage(img, x, y, null);
         Graphics2D g2d = (Graphics2D) g;
 

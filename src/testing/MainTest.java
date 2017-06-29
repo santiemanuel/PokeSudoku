@@ -15,7 +15,7 @@ public class MainTest {
 	 * @param args the arguments
 	 */
 	public static void main(String[] args) {
-		SudokuBoard sudo = new SudokuGen();
+		SudokuGen sudo = new SudokuGen();
 		ArrayList<Integer> numbers = new ArrayList<Integer>();
 		numbers = sudo.getNewnumbers();
 		int index = 0;
@@ -23,21 +23,13 @@ public class MainTest {
 			System.out.print(numbers.get(index)+" ");
 			index++;
 		}
-		System.out.println();
-		System.out.println();
-		
-		sudo.showSudokuMatrix();
-		
-		System.out.println();
-		
-		sudo.SwapVals(4, 5);
-		
-		
-		
+		System.out.println();	
 		System.out.println();
 		
 		sudo.showSudokuMatrix();
+		System.out.println();
 		
+		sudo.ShowAllValidvalues();
 		
 		
 

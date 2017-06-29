@@ -32,10 +32,10 @@ public class GameFrame extends JFrame {
 	private SudokuPanel sPanel;
 	
 	/** The Buttons JPanel. */
-	private ButtonPanel bPanel;
+	private ButtonPanel iconsPanel;
 	
 	/** The window and background JPanel. */
-	private JPanel windowPanel, bgPanel;
+	private JPanel windowPanel, bgPanel, buttonsPanel;
 	
 	/** The Layered Pane. */
 	private JLayeredPane lp;
@@ -46,8 +46,8 @@ public class GameFrame extends JFrame {
 	/** The Sudoku matrix object. */
 	private SudokuGen puzzle;
 	
-	/** The mybutton. */
-	private JButton newgame;
+	/** The newgame and hint buttons. */
+	private JButton newgame, hint;
 	
 	/** The width. */
 	private static int WIDTH;
@@ -78,13 +78,23 @@ public class GameFrame extends JFrame {
 		this.bgPanel = new BackgroundPanel(WIDTH,HEIGHT);
 		this.bgPanel.setSize(new Dimension(WIDTH,HEIGHT));
 		
-		newgame = new JButton("Nuevo juego");
-	    newgame.addActionListener(new ActionListener()
+		this.buttonsPanel = new JPanel(new BorderLayout());
+		
+		this.newgame = new JButton("Nuevo juego");
+	    this.newgame.addActionListener(new ActionListener()
 	    {
 	      public void actionPerformed(ActionEvent e)
 	      {
 	        rebuild();
 	      }
+	    });
+	    
+	    this.hint = new JButton("Pista");
+	    this.hint.addActionListener(new ActionListener()
+	    {
+	    	public void actionPerformed(ActionEvent e){
+	    		getHint();
+	    	}
 	    });
 		
 	    
@@ -93,13 +103,15 @@ public class GameFrame extends JFrame {
 		
 		this.sPanel = new SudokuPanel(WIDTH, HEIGHT, this.images);
 		this.sPanel.setOpaque(false);
-		this.bPanel = new ButtonPanel(puzzle, images, sPanel);
+		this.iconsPanel = new ButtonPanel(puzzle, images, sPanel);
 	    
 		this.lp.add(this.bgPanel, new Integer(1));
 		this.lp.add(this.sPanel, new Integer(2));
+		
+		this.buttonsPanel.add(newgame, BorderLayout.WEST);
 	    
-		windowPanel.add(this.lp);
-		windowPanel.add(newgame, BorderLayout.SOUTH);
+		this.windowPanel.add(this.lp);
+		this.windowPanel.add(this.buttonsPanel, BorderLayout.SOUTH);
 		
 		this.add(windowPanel);
 		
@@ -129,6 +141,7 @@ public class GameFrame extends JFrame {
 	public void rebuild(){
 	
 		this.lp.removeAll();
+		this.buttonsPanel.removeAll();
 		this.windowPanel.removeAll();
 		
 		this.bgPanel = new BackgroundPanel(WIDTH,HEIGHT);
@@ -141,20 +154,28 @@ public class GameFrame extends JFrame {
 		this.sPanel.setOpaque(false);
 		this.sPanel.setSize(new Dimension(WIDTH, HEIGHT));
 		
-		this.bPanel = new ButtonPanel(puzzle, images, sPanel);
+		this.iconsPanel = new ButtonPanel(puzzle, images, sPanel);
 		this.sPanel.newSudoku(this.puzzle, images);
 
 		this.lp.add(bgPanel, new Integer(1));
 		this.lp.add(sPanel, new Integer(2));
 		windowPanel.add(this.lp, BorderLayout.LINE_START);
-		windowPanel.add(newgame, BorderLayout.SOUTH);
-		windowPanel.add(this.bPanel, BorderLayout.LINE_END);
+		
+		this.buttonsPanel.add(newgame, BorderLayout.WEST);
+		this.buttonsPanel.add(hint, BorderLayout.EAST);
+		
+		this.windowPanel.add(this.buttonsPanel, BorderLayout.SOUTH);
+		this.windowPanel.add(this.iconsPanel, BorderLayout.LINE_END);
 		
 		this.add(windowPanel);
 		
-		sPanel.revalidate();
-		sPanel.repaint();
+		this.sPanel.revalidate();
+		this.sPanel.repaint();
 		
+	}
+	
+	public void getHint(){
+		this.sPanel.getSudokuHint();
 	}
 
 	/**

@@ -23,7 +23,7 @@ public abstract class SudokuBoard extends Matrix {
 	 */
 	public SudokuBoard(){
 		
-		this.newnumbers = new ArrayList<Integer>();
+		//this.newnumbers = new ArrayList<Integer>();
 		this.newnumbers = generateMyNumbers();
 		this.board = new Matrix();
 		int[][] auxMat=new int[][]{

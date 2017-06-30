@@ -1,6 +1,6 @@
 package testing;
 
-import utils.*;
+import utils.Sudoku;
 
 // TODO: Auto-generated Javadoc
 /**

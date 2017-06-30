@@ -2,13 +2,10 @@ package ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Point;
@@ -19,7 +16,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
-import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -228,9 +224,7 @@ public class SudokuPanel extends JPanel {
 	}
 	
 	public void getSudokuHint() {
-		if (puzzle.getSolved()){
-			JOptionPane.showMessageDialog(null, "El puzzle ya esta resuelto!");
-		}
+		if (puzzle.getSolved())	JOptionPane.showMessageDialog(null, "El puzzle ya esta resuelto!");
 		else{
 			cleanPanels();
 			Position cellHint = this.puzzle.getFirstAvailableMove();
@@ -247,7 +241,7 @@ public class SudokuPanel extends JPanel {
 				paintBox(row,col);
 				
 				if (puzzle.getSolved()) JOptionPane.showMessageDialog(null, "Felicidades! Resolviste el puzzle.");
-			}else JOptionPane.showMessageDialog(null, "El puzzle no tiene solucion unica.");
+			};
 		}
 	}
 

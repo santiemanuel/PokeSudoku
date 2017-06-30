@@ -16,6 +16,7 @@ import ui.BackgroundPanel;
 import ui.ButtonPanel;
 import ui.ImageButton;
 import ui.SudokuPanel;
+import utils.Sudoku;
 import utils.SudokuGen;
 
 
@@ -44,7 +45,7 @@ public class GameFrame extends JFrame {
 	private ImageButton images;
 	
 	/** The Sudoku matrix object. */
-	private SudokuGen puzzle;
+	private Sudoku puzzle;
 	
 	/** The newgame and hint buttons. */
 	private JButton newgame, hint;
@@ -97,12 +98,12 @@ public class GameFrame extends JFrame {
 	    	}
 	    });
 		    
-		this.puzzle = new SudokuGen();
-		this.images = new ImageButton(puzzle, WIDTH);
+		this.puzzle = new Sudoku();
+		this.images = new ImageButton(puzzle.getSudoku(), WIDTH);
 		
 		this.sPanel = new SudokuPanel(WIDTH, HEIGHT, this.images);
 		this.sPanel.setOpaque(false);
-		this.iconsPanel = new ButtonPanel(puzzle, images, sPanel);
+		this.iconsPanel = new ButtonPanel(puzzle.getSudoku(), images, sPanel);
 	    
 		this.lp.add(this.bgPanel, new Integer(1));
 		this.lp.add(this.sPanel, new Integer(2));
@@ -146,15 +147,15 @@ public class GameFrame extends JFrame {
 		this.bgPanel = new BackgroundPanel(WIDTH,HEIGHT);
 		this.bgPanel.setSize(new Dimension(WIDTH,HEIGHT));
 		
-		this.puzzle = new SudokuGen();
-		this.images = new ImageButton(puzzle, WIDTH);
+		this.puzzle = new Sudoku();
+		this.images = new ImageButton(puzzle.getSudoku(), WIDTH);
 		
 		this.sPanel = new SudokuPanel(WIDTH, HEIGHT, this.images);
 		this.sPanel.setOpaque(false);
 		this.sPanel.setSize(new Dimension(WIDTH, HEIGHT));
 		
-		this.iconsPanel = new ButtonPanel(puzzle, images, sPanel);
-		this.sPanel.newSudoku(this.puzzle, images);
+		this.iconsPanel = new ButtonPanel(puzzle.getSudoku(), images, sPanel);
+		this.sPanel.newSudoku(this.puzzle.getSudoku(), images);
 
 		this.lp.add(bgPanel, new Integer(1));
 		this.lp.add(sPanel, new Integer(2));

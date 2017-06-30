@@ -24,6 +24,8 @@ public class Position {
 		this.y = Y;
 	}
 	
+	public Position(){}
+	
 	/**
 	 * Gets the position.
 	 *

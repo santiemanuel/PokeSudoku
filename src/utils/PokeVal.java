@@ -22,6 +22,8 @@ public class PokeVal {
 		this.IDPoke = ID;
 		this.nameImg = name;
 	}
+	
+	public PokeVal(){}
 
 	/**
 	 * Gets the IDpoke.

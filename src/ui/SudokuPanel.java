@@ -22,6 +22,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import utils.PlaySound;
 import utils.Position;
 import utils.SudokuGen;
 
@@ -38,6 +39,7 @@ public class SudokuPanel extends JPanel {
 	/** The Sudoku matrix object. */
 	private SudokuGen puzzle;
 	
+	/** The lockedcells. */
 	private ArrayList<Position> lockedcells;
 	
 	/** The Constant ROWS. */
@@ -52,7 +54,11 @@ public class SudokuPanel extends JPanel {
 	/** The mypanels. */
 	private JPanel[][] mypanels;
 	
+	/** The label BG. */
 	private Color labelBG;
+	
+	/** The sound effects. */
+	private PlaySound[] effects;
 
 
 	/**
@@ -92,6 +98,12 @@ public class SudokuPanel extends JPanel {
 				cons.fill = GridBagConstraints.BOTH;
 				this.add(this.mypanels[row][col], cons);
 		}
+		
+		//Loads sound effects to play according to the move
+		this.effects = new PlaySound[3];
+		this.effects[0] = new PlaySound("error");
+		this.effects[1] = new PlaySound("hint");
+		this.effects[2] = new PlaySound("right");
 		
 	}
 	
@@ -144,6 +156,10 @@ public class SudokuPanel extends JPanel {
 
 		JLabel lbl = new JLabel(element);
 		
+		//hides the background and sets the color
+		lbl.setOpaque(false);
+		lbl.setBackground(labelBG);
+		
 		//Anonymous class to define the MouseListener for the given JLabel
 		lbl.addMouseListener(new MouseAdapter(){
 			@Override
@@ -178,18 +194,18 @@ public class SudokuPanel extends JPanel {
 	 *
 	 * @param buttonValue The button value
 	 */
-	public void msgButtonActionListener(Integer buttonValue){
+	public void msgButtonActionListener(Integer buttonValue, int source){
 		//Checks if cell is not a starting cell
 		if (this.puzzle.isCellMutable(selPanel.x, selPanel.y)){
 			int r = selPanel.x;
 			int c = selPanel.y;
 			//Checks for validity according to Sudoku rules, code 1 for GUI usage
 			if (this.puzzle.isValidMove(r, c, buttonValue, 1)){
+				if (source == 0) this.effects[2].play();
 				this.puzzle.makeMove(r, c, buttonValue);
 				myimages.setImageCell(r, c, buttonValue);
 				((JLabel)this.mypanels[r][c].getComponent(0)).setIcon(myimages.getImageAt(r,c));
-				this.puzzle.loadValidvalues();
-			};
+			}else this.effects[0].play();
 			
 			revalidate();
 			repaint();
@@ -207,7 +223,6 @@ public class SudokuPanel extends JPanel {
 	 * the buttonAction event occurs, that object's appropriate
 	 * method is invoked.
 	 *
-	 * @see ButtonActionEvent
 	 */
 	public class ButtonActionListener implements ActionListener	{
 		
@@ -217,15 +232,21 @@ public class SudokuPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent e){
 			Integer value = Integer.parseInt(e.getActionCommand());
-			msgButtonActionListener(value);
+			int source = 0;
+			msgButtonActionListener(value, source);
 			if (puzzle.getSolved()) JOptionPane.showMessageDialog(null, "Felicidades! Resolviste el puzzle.");
 		}
 		
 	}
 	
+	/**
+	 * Gets the sudoku hint and plays the first available move (1 candidate).
+	 *
+	 */
 	public void getSudokuHint() {
 		if (puzzle.getSolved())	JOptionPane.showMessageDialog(null, "El puzzle ya esta resuelto!");
 		else{
+			int source = 1;
 			cleanPanels();
 			Position cellHint = this.puzzle.getFirstAvailableMove();
 			if (cellHint != null){
@@ -234,31 +255,46 @@ public class SudokuPanel extends JPanel {
 				col = cellHint.getY();
 				this.selPanel = new Point(row, col);			
 				Integer value = this.puzzle.getValidvalue(row, col, 0);
-				msgButtonActionListener(value);
+				msgButtonActionListener(value, source);
 				
 				paintRow(row);
 				paintColumn(col);
 				paintBox(row,col);
+				this.effects[1].play();
 				
 				if (puzzle.getSolved()) JOptionPane.showMessageDialog(null, "Felicidades! Resolviste el puzzle.");
 			};
 		}
 	}
 
+	/**
+	 * Paints the current row.
+	 *
+	 * @param row the row
+	 */
 	public void paintRow(int row){
 		for (int c=0; c<ROWS;c++){
 			((JLabel)mypanels[row][c].getComponent(0)).setOpaque(true);
-			((JLabel)mypanels[row][c].getComponent(0)).setBackground(labelBG);
 		}
 	}
 	
+	/**
+	 * Paints the current column.
+	 *
+	 * @param col the col
+	 */
 	public void paintColumn(int col){
 		for (int r=0; r<COLUMNS;r++){
 			((JLabel)mypanels[r][col].getComponent(0)).setOpaque(true);
-			((JLabel)mypanels[r][col].getComponent(0)).setBackground(labelBG);
 		}
 	}
 	
+	/**
+	 * Paints the current box.
+	 *
+	 * @param row the row
+	 * @param col the col
+	 */
 	public void paintBox(int row, int col){
 		int boxRow = row / 3;
 		int boxCol = col / 3;
@@ -269,11 +305,13 @@ public class SudokuPanel extends JPanel {
 		for (int r = startRow; r<= (startRow+3)-1;r++){
 			for (int c = startCol; c<= (startCol+3)-1;c++){
 				((JLabel)mypanels[r][c].getComponent(0)).setOpaque(true);
-				((JLabel)mypanels[r][c].getComponent(0)).setBackground(labelBG);
 			}
 		}
 	}
 	
+	/**
+	 * Cleans all panels before painting again.
+	 */
 	public void cleanPanels(){
 		for (int r = 0; r< ROWS ;r++){
 			for (int c = 0; c< COLUMNS;c++){

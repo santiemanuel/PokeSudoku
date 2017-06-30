@@ -18,9 +18,8 @@ public class MainTest {
 		
 		sudo.getSudoku().getMyboard().showSudokuMatrix();
 
-		System.out.println();	
 		System.out.println();
-		System.out.println();
+
 		
 		
 

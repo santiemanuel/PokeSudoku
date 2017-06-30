@@ -23,10 +23,13 @@ public class SudokuGen{
 	/** The mutable matrix for elements. */
 	private Boolean [][] mutable;
 	
+	/** The Solved state. */
 	private Boolean Solved;
 	
+	/** The validvalues. */
 	private ArrayList<Integer> [][] validvalues;
 	
+	/** The mutable and locked cells. */
 	private ArrayList<Position> mutableCells, lockedCells;
 	
 	/** The limit of shuffling. */
@@ -53,10 +56,16 @@ public class SudokuGen{
 		removeValues();
 		updateMutable();
 		updateLocked();
+		initValidvalues();
 		loadValidvalues();
 	
 	}
 	
+	/**
+	 * Instantiates a new sudoku gen.
+	 *
+	 * @param sudoku the sudoku
+	 */
 	public SudokuGen(SudokuGen sudoku){
 		this.genboard = sudoku.genboard;
 		this.lockedCells = sudoku.lockedCells;
@@ -68,6 +77,11 @@ public class SudokuGen{
 		
 	}
 	
+	/**
+	 * Checks if is solved.
+	 *
+	 * @return true, if is solved
+	 */
 	public boolean isSolved(){
 	
 		for (int i=0;i<this.getMutableCells().size();i++)
@@ -95,10 +109,12 @@ public class SudokuGen{
 		}
 	}
 	
+	/**
+	 * Load validvalues for each mutable cell.
+	 */
 	public void loadValidvalues(){
 		ArrayList<Integer> validnumbers = this.myboard.getNewnumbers();
 		int row,col;
-		initValidvalues();
 		for (int i=0;i<this.getMutableCells().size();i++){
 			row = this.getMutableCells().get(i).getX();
 			col = this.getMutableCells().get(i).getY();
@@ -109,27 +125,115 @@ public class SudokuGen{
 						this.validvalues[row][col].add(number);
 				}
 				
-			}
-			
+			}		
 		}
 	}
 	
+	/**
+	 * Update validvalues matrix.
+	 *
+	 * @param row The row
+	 * @param col The col
+	 * @param value The value
+	 */
+	public void updateValidvalue(int row, int col, int value){
+		removeInRow(row, value);
+		removeInColumn(col, value);
+		removeInBox(row, col,value);
+	}
+	
+	/**
+	 * Removes the value in row.
+	 *
+	 * @param row the row
+	 * @param value the value
+	 */
+	public void removeInRow(int row, int value){
+		for (int c=0;c<SIZE;c++){
+			int index = this.validvalues[row][c].indexOf(value);
+			if (index != -1) this.validvalues[row][c].remove(index);
+		}
+	}
+	
+	/**
+	 * Removes the value in column.
+	 *
+	 * @param column the column
+	 * @param value the value
+	 */
+	public void removeInColumn(int column, int value){
+		for (int r=0;r<SIZE;r++){
+			int index = this.validvalues[r][column].indexOf(value);
+			if (index != -1) this.validvalues[r][column].remove(index);
+		}
+	}
+	
+	/**
+	 * Removes the value in box.
+	 *
+	 * @param row the row
+	 * @param col the col
+	 * @param value the value
+	 */
+	public void removeInBox(int row, int col, int value){
+		int boxRow = row / 3;
+		int boxCol = col / 3;
+		
+		int startRow = (boxRow * 3);
+		int startCol = (boxCol * 3);
+		
+		for (int r = startRow; r<= (startRow+3)-1;r++){
+			for (int c = startCol; c<= (startCol+3)-1;c++){
+				int index = this.validvalues[r][c].indexOf(value);
+				if (index != -1) this.validvalues[r][c].remove(index);
+			}
+		}
+	}
+	
+	
+	
+	/**
+	 * Gets the genboard.
+	 *
+	 * @return the genboard
+	 */
 	public Matrix getGenboard() {
 		return genboard;
 	}
 
+	/**
+	 * Sets the genboard.
+	 *
+	 * @param genboard the new genboard
+	 */
 	public void setGenboard(Matrix genboard) {
 		this.genboard = genboard;
 	}
 
+	/**
+	 * Gets the myboard.
+	 *
+	 * @return the myboard
+	 */
 	public SudokuBoard getMyboard() {
 		return myboard;
 	}
 
+	/**
+	 * Sets the myboard.
+	 *
+	 * @param myboard the new myboard
+	 */
 	public void setMyboard(SudokuBoard myboard) {
 		this.myboard = myboard;
 	}
 
+	/**
+	 * Show validvalues for a cell.
+	 *
+	 * @param r the r
+	 * @param c the c
+	 */
 	public void ShowValidvalues(int r, int c){
 		for (int j=0;j<this.validvalues[r][c].size();j++){
 			System.out.print(getValidvalue(r, c, j)+" ");
@@ -137,6 +241,9 @@ public class SudokuGen{
 		System.out.println();
 	}
 	
+	/**
+	 * Show all validvalues for the matrix.
+	 */
 	public void ShowAllValidvalues(){
 		for (int i=0;i<this.getMutableCells().size();i++)
 		{
@@ -147,6 +254,14 @@ public class SudokuGen{
 		}
 	}
 	
+	/**
+	 * Gets the validvalue.
+	 *
+	 * @param r the r
+	 * @param c the c
+	 * @param index the index
+	 * @return the validvalue
+	 */
 	public Integer getValidvalue(int r, int c, int index){
 		return (this.validvalues[r][c].get(index));
 	}
@@ -259,6 +374,9 @@ public class SudokuGen{
 		}
 	}
 	
+	/**
+	 * Update locked checking for false mutable cells.
+	 */
 	private void updateLocked(){
 		for (int r=0; r<SIZE; r++){
 			for (int c=0; c<SIZE; c++){
@@ -328,30 +446,61 @@ public class SudokuGen{
 			Integer num = new Integer(value);
 			this.genboard.getMatrix()[row][col].setIDPoke(value);
 			this.genboard.getMatrix()[row][col].setNameImg(num.toString()+".png");
+			updateValidvalue(row, col, value);
 			this.setSolved(isSolved()); 
 		}
 	}
 
+	/**
+	 * Gets the mutable cells.
+	 *
+	 * @return the mutable cells
+	 */
 	public ArrayList<Position> getMutableCells() {
 		return mutableCells;
 	}
 
+	/**
+	 * Sets the mutable cells.
+	 *
+	 * @param mutableCells the new mutable cells
+	 */
 	public void setMutableCells(ArrayList<Position> mutableCells) {
 		this.mutableCells = mutableCells;
 	}
 
+	/**
+	 * Gets the locked cells.
+	 *
+	 * @return the locked cells
+	 */
 	public ArrayList<Position> getLockedCells() {
 		return lockedCells;
 	}
 
+	/**
+	 * Sets the locked cells.
+	 *
+	 * @param lockedCells the new locked cells
+	 */
 	public void setLockedCells(ArrayList<Position> lockedCells) {
 		this.lockedCells = lockedCells;
 	}
 
+	/**
+	 * Gets the solved state.
+	 *
+	 * @return the solved
+	 */
 	public Boolean getSolved() {
 		return Solved;
 	}
 
+	/**
+	 * Sets the solved state.
+	 *
+	 * @param solved the new solved
+	 */
 	public void setSolved(Boolean solved) {
 		Solved = solved;
 	}
@@ -359,7 +508,4 @@ public class SudokuGen{
     protected Object clone() throws CloneNotSupportedException {
         return super.clone();
     }
-	
-	
-	
 }

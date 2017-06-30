@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
@@ -49,6 +50,14 @@ public class GameFrame extends JFrame {
 	/** The newgame and hint buttons. */
 	private JButton newgame, hint;
 	
+	private String[] difficulty = {"Facil", "Normal", "Dificil"};
+	
+	/** The selected diff. */
+	private int selectedDiff;
+	
+	/** The difficulty combo box. */
+	private JComboBox<String> diffComboBox;
+	
 	/** The width. */
 	private static int WIDTH;
 	
@@ -58,6 +67,7 @@ public class GameFrame extends JFrame {
 	/**
 	 * Instantiates a new game frame.
 	 */
+
 	public GameFrame(){
 		
 		this.setTitle("PokeSudoku");
@@ -65,6 +75,7 @@ public class GameFrame extends JFrame {
 		
 		setResolution();
 		
+		this.selectedDiff = 0;
 		this.lp = new JLayeredPane();
 		this.lp.setPreferredSize(new Dimension(WIDTH,HEIGHT));
 		this.lp.setMinimumSize(new Dimension(WIDTH,HEIGHT));
@@ -74,6 +85,30 @@ public class GameFrame extends JFrame {
 		windowPanel.setMinimumSize(new Dimension(WIDTH+100,HEIGHT+30));
 	
 		this.setResizable(false);
+		
+		this.diffComboBox = new JComboBox<String>(difficulty);
+		ActionListener diffActionListener = new ActionListener(){
+			
+			@Override
+			public void actionPerformed(ActionEvent e){ 
+			
+				String sel = (String) diffComboBox.getSelectedItem();
+			
+				switch (sel){
+				case "Facil":
+					selectedDiff = 0;
+					break;
+				case "Normal":
+					selectedDiff = 1;
+					break;
+				case "Dificil":
+					selectedDiff = 2;
+					break;
+				}
+			}
+		};
+		
+		this.diffComboBox.addActionListener(diffActionListener);
 		
 		this.bgPanel = new BackgroundPanel(WIDTH,HEIGHT);
 		this.bgPanel.setSize(new Dimension(WIDTH,HEIGHT));
@@ -97,7 +132,7 @@ public class GameFrame extends JFrame {
 	    	}
 	    });
 		    
-		this.puzzle = new Sudoku();
+		this.puzzle = new Sudoku(this.selectedDiff);
 		this.images = new ImageButton(puzzle.getSudoku(), WIDTH);
 		
 		this.sPanel = new SudokuPanel(WIDTH, HEIGHT, this.images);
@@ -107,7 +142,8 @@ public class GameFrame extends JFrame {
 		this.lp.add(this.bgPanel, new Integer(1));
 		this.lp.add(this.sPanel, new Integer(2));
 		
-		this.buttonsPanel.add(newgame, BorderLayout.WEST);
+		this.buttonsPanel.add(this.diffComboBox, BorderLayout.WEST);
+		this.buttonsPanel.add(this.newgame, BorderLayout.CENTER);
 	    
 		this.windowPanel.add(this.lp);
 		this.windowPanel.add(this.buttonsPanel, BorderLayout.SOUTH);
@@ -146,7 +182,7 @@ public class GameFrame extends JFrame {
 		this.bgPanel = new BackgroundPanel(WIDTH,HEIGHT);
 		this.bgPanel.setSize(new Dimension(WIDTH,HEIGHT));
 		
-		this.puzzle = new Sudoku();
+		this.puzzle = new Sudoku(this.selectedDiff);
 		this.images = new ImageButton(puzzle.getSudoku(), WIDTH);
 		
 		this.sPanel = new SudokuPanel(WIDTH, HEIGHT, this.images);
@@ -161,7 +197,8 @@ public class GameFrame extends JFrame {
 
 		this.windowPanel.add(this.lp, BorderLayout.LINE_START);
 		
-		this.buttonsPanel.add(newgame, BorderLayout.WEST);
+		this.buttonsPanel.add(newgame, BorderLayout.CENTER);
+		this.buttonsPanel.add(diffComboBox, BorderLayout.WEST);
 		this.buttonsPanel.add(hint, BorderLayout.EAST);
 		
 		this.windowPanel.add(this.buttonsPanel, BorderLayout.SOUTH);

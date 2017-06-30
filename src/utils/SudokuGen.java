@@ -38,7 +38,7 @@ public class SudokuGen{
 	/**
 	 * Instantiates a new sudoku gen.
 	 */
-	public SudokuGen(){
+	public SudokuGen(int difficulty){
 		this.myboard = new SudokuBoard();
 		random = new Random();
 		this.mutable = new Boolean[SIZE][SIZE];
@@ -53,12 +53,16 @@ public class SudokuGen{
 			if (random.nextInt(9) % 2 == 0 ) this.genboard.rotate();
 		}
 		initMutables();
-		removeValues();
+		removeValues(difficulty);
 		updateMutable();
 		updateLocked();
 		initValidvalues();
 		loadValidvalues();
 	
+	}
+	
+	public SudokuGen(){
+		
 	}
 	
 	/**
@@ -388,10 +392,14 @@ public class SudokuGen{
 	}
 	
 	/**
-	 * Removes 40 cell values from the matrix.
+	 * Removes cell values from the matrix according to the difficulty.
 	 */
-	private void removeValues(){
+	private void removeValues(int difficulty){
 		int spaces = 40;
+		
+		if (difficulty == 1) spaces += 5;
+		if (difficulty == 2) spaces += 10;
+		
 		int index = 0;
 		int r, c;
 		

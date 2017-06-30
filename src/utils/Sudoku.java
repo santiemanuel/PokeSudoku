@@ -15,12 +15,12 @@ public class Sudoku {
 	/**
 	 * Instantiates a new sudoku.
 	 */
-	public Sudoku(){
+	public Sudoku(int difficulty){
 		
-		SudokuGen auxSudoku = new SudokuGen();
+		SudokuGen auxSudoku = new SudokuGen(difficulty);
 		
 		while (!createUniqueSolution(auxSudoku)){
-			auxSudoku = new SudokuGen();
+			auxSudoku = new SudokuGen(difficulty);
 		}
 	}
 		

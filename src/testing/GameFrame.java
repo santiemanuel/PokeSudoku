@@ -17,7 +17,6 @@ import ui.ButtonPanel;
 import ui.ImageButton;
 import ui.SudokuPanel;
 import utils.Sudoku;
-import utils.SudokuGen;
 
 
 // TODO: Auto-generated Javadoc

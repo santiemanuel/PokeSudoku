@@ -18,10 +18,13 @@ public class Sudoku {
 	public Sudoku(int difficulty){
 		
 		SudokuGen auxSudoku = new SudokuGen(difficulty);
-		
+		final long startTime = System.nanoTime();
 		while (!createUniqueSolution(auxSudoku)){
 			auxSudoku = new SudokuGen(difficulty);
 		}
+		final long duration = System.nanoTime() - startTime;
+		System.out.println(duration/1000000);
+
 	}
 		
 	/**

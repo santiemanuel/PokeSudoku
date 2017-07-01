@@ -33,7 +33,7 @@ public class SudokuGen{
 	private ArrayList<Position> mutableCells, lockedCells;
 	
 	/** The limit of shuffling. */
-	private static final int LIMIT = 5;
+	private static final int LIMIT = 20;
 	
 	/**
 	 * Instantiates a new sudoku gen.
@@ -47,9 +47,11 @@ public class SudokuGen{
 		this.setMutableCells(new ArrayList<Position>());
 		this.setLockedCells(new ArrayList<Position>());
 		for (int i=0;i<random.nextInt(LIMIT);i++){
-			this.genboard.SwapColumns(random.nextInt(3), random.nextInt(3), random.nextInt(3));
-			this.genboard.SwapRows(random.nextInt(3), random.nextInt(3), random.nextInt(3));
+			this.genboard.SwapColumns(random.nextInt(2), random.nextInt(2), random.nextInt(2));
+			this.genboard.SwapRows(random.nextInt(2), random.nextInt(2), random.nextInt(2));
 			this.genboard.SwapVals(random.nextInt(9)+1, random.nextInt(9)+1);
+			this.genboard.SwapRowBox(random.nextInt(2), random.nextInt(2));
+			this.genboard.SwapColumnBox(random.nextInt(2), random.nextInt(2));
 			if (random.nextInt(9) % 2 == 0 ) this.genboard.rotate();
 		}
 		initMutables();

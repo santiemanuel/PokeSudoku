@@ -12,7 +12,9 @@ public class Matrix {
 	protected final int ROWS = 9;
 	
 	/** The columns. */
-	protected final int  COLUMNS = 9;
+	protected final int COLUMNS = 9;
+	
+	protected final int GROUPCNT = 3;
 	
 	/** The values. */
 	protected PokeVal values[][];
@@ -173,24 +175,13 @@ public class Matrix {
 	 */
 	public void SwapRows(int row1, int row2, int group){
 		ArrayList<PokeVal> ListAux = new ArrayList<PokeVal>();
-		int rows = 0;
-		PokeVal temp = null;
-		if (group == 0)	rows = 0;
-		if (group == 1)	rows = 3;
-		if (group == 2)	rows = 6;
+		int rows = group * GROUPCNT;
+
 		for (int c=0;c<this.COLUMNS;c++)
 		{
 			ListAux.add(this.values[rows+row1][c]);
-		}
-		for (int c=0;c<this.COLUMNS;c++)
-		{
 			this.values[rows+row1][c] = this.values[rows+row2][c];
-		}
-		for (int c=0;c<this.COLUMNS;c++)
-		{
-			temp = ListAux.get(0);
-			this.setValue(rows+row2, c, temp);
-			ListAux.remove(0);
+			this.setValue(rows+row2, c, ListAux.get(c));
 		}
 		
 	}
@@ -204,26 +195,48 @@ public class Matrix {
 	 */
 	public void SwapColumns(int column1, int column2, int group){
 		ArrayList<PokeVal> ListAux = new ArrayList<PokeVal>();
-		int columns = 0;
-		PokeVal temp = null;
-		if (group == 0)	columns = 0;
-		if (group == 1)	columns = 3;
-		if (group == 2)	columns = 6;
+		int columns = group * GROUPCNT;
 		
 		for (int r=0;r<this.ROWS;r++)
 		{
 			ListAux.add(this.values[r][columns+column1]);
-		}
-		for (int r=0;r<this.ROWS;r++)
-		{
 			this.values[r][columns+column1] = this.values[r][columns+column2];
+			this.setValue(r, columns+column2, ListAux.get(r));
 		}
-		for (int r=0;r<this.ROWS;r++)
-		{
-			temp = ListAux.get(0);
-			this.setValue(r, columns+column2, temp);
-			ListAux.remove(0);
+	}
+	
+	public void SwapColumnBox(int group1, int group2){
+		ArrayList<PokeVal> ListAux = new ArrayList<PokeVal>();
+		int colgroup1 = group1 * GROUPCNT;
+		int colgroup2 = group2 * GROUPCNT;
+		
+		for (int c=0;c<GROUPCNT;c++){
+			for (int r=0;r<this.ROWS;r++)
+			{
+				ListAux.add(this.values[r][colgroup1+c]);
+				this.values[r][colgroup1+c] = this.values[r][colgroup2+c];
+				this.setValue(r, colgroup2+c, ListAux.get(r));
+			}
+			ListAux.removeAll(ListAux);
 		}
+		
+	}
+	
+	public void SwapRowBox(int group1, int group2){
+		ArrayList<PokeVal> ListAux = new ArrayList<PokeVal>();
+		int rowgroup1 = group1 * GROUPCNT;
+		int rowgroup2 = group2 * GROUPCNT;
+		
+		for (int r=0;r<GROUPCNT;r++){
+			for (int c=0;c<this.COLUMNS;c++)
+			{
+				ListAux.add(this.values[rowgroup1+r][c]);
+				this.values[rowgroup1+r][c] = this.values[rowgroup2+r][c];
+				this.setValue(rowgroup2+r, c, ListAux.get(c));
+			}
+			ListAux.removeAll(ListAux);
+		}
+		
 	}
 	
 	

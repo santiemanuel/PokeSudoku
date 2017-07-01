@@ -16,10 +16,8 @@ public class MainTest {
 	public static void main(String[] args) {
 		Sudoku sudo = new Sudoku(0);
 		
-		sudo.getSudoku().getMyboard().showSudokuMatrix();
 
 		System.out.println();
-
 		
 		
 

@@ -55,7 +55,7 @@ public class SudokuPanel extends JPanel {
 	private JPanel[][] mypanels;
 	
 	/** The label BG. */
-	private Color labelBG;
+	private Color labelBG, valueColor;
 	
 	/** The sound effects. */
 	private PlaySound[] effects;
@@ -81,6 +81,7 @@ public class SudokuPanel extends JPanel {
 		//this.setPreferredSize(new Dimension(576,576));
 		
 		this.labelBG = new Color(0,64,128,128);
+		this.valueColor = new Color(64,128,0,192);
 		
 		//Sets all cells to zero
 		for (int i=0;i<ROWS*COLUMNS;i++)
@@ -165,9 +166,9 @@ public class SudokuPanel extends JPanel {
 			@Override
 			public void mouseClicked(MouseEvent e){
 				//Checks if cell is editable
+				cleanPanels();
 				if (puzzle.isCellMutable(r, c)){
 					//If left click, sets the location to put an icon there
-					cleanPanels();
 					if (SwingUtilities.isLeftMouseButton(e)){
 						selPanel.setLocation(r, c);
 						paintRow(r);
@@ -180,6 +181,8 @@ public class SudokuPanel extends JPanel {
 						((JLabel)mypanels[r][c].getComponent(0)).setIcon(myimages.getImagelist().get(0));
 					}
 				}
+				int value = puzzle.getGenboard().getValue(r, c).getIDPoke();
+				if (value != 0) paintValue(r,c);
 				revalidate();
 				repaint();
 				
@@ -274,6 +277,7 @@ public class SudokuPanel extends JPanel {
 	 */
 	public void paintRow(int row){
 		for (int c=0; c<ROWS;c++){
+			((JLabel)mypanels[row][c].getComponent(0)).setBackground(labelBG);
 			((JLabel)mypanels[row][c].getComponent(0)).setOpaque(true);
 		}
 	}
@@ -285,6 +289,7 @@ public class SudokuPanel extends JPanel {
 	 */
 	public void paintColumn(int col){
 		for (int r=0; r<COLUMNS;r++){
+			((JLabel)mypanels[r][col].getComponent(0)).setBackground(labelBG);
 			((JLabel)mypanels[r][col].getComponent(0)).setOpaque(true);
 		}
 	}
@@ -304,8 +309,22 @@ public class SudokuPanel extends JPanel {
 		
 		for (int r = startRow; r<= (startRow+3)-1;r++){
 			for (int c = startCol; c<= (startCol+3)-1;c++){
+				((JLabel)mypanels[r][c].getComponent(0)).setBackground(labelBG);
 				((JLabel)mypanels[r][c].getComponent(0)).setOpaque(true);
 			}
+		}
+	}
+	
+	public void paintValue(int row, int col){
+		int value = this.puzzle.getGenboard().getValue(row, col).getIDPoke();
+		for (int i=0;i<ROWS*COLUMNS;i++)
+		{
+				int r = i / ROWS;
+				int c = i % ROWS;
+				if (this.puzzle.getGenboard().getValue(r, c).getIDPoke() == value){
+					((JLabel)mypanels[r][c].getComponent(0)).setBackground(valueColor);
+					((JLabel)mypanels[r][c].getComponent(0)).setOpaque(true);
+				}
 		}
 	}
 	

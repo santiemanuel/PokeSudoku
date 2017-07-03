@@ -14,8 +14,8 @@ public class MainTest {
 	 * @param args the arguments
 	 */
 	public static void main(String[] args) {
-		Sudoku sudo = new Sudoku(2);
-		sudo.getSudoku().getMyboard().showSudokuMatrix();
+		
+		int ind = 0;
 
 		System.out.println();
 		

@@ -23,7 +23,7 @@ public class Sudoku {
 	public Sudoku(int difficulty){
 		this.difficulty = difficulty;
 		ExecutorService executor = Executors.newFixedThreadPool(2);
-		
+
 		List<Callable<SudokuGen>> callTasks = new ArrayList<Callable<SudokuGen>>();
 		for (int i=0;i<2;i++) callTasks.add(new SudokuWorker(this.difficulty));
 		
@@ -41,8 +41,7 @@ public class Sudoku {
 		}
 		
 		final long duration = System.nanoTime() - start;
-		System.out.println(duration/1000000+" ms");
-
+		System.out.println(duration/1000000+" ms");	
 	}
 		
 	

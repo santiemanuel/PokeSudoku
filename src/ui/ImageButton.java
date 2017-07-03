@@ -93,6 +93,8 @@ public class ImageButton {
 				int index = puzzle.getMyboard().getNewnumbers().indexOf(id);
 				this.imageMatrix[row][column] = this.imagelist.get(index);
 		}
+		
+		
 	}
 	
 	/**

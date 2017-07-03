@@ -6,6 +6,7 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -48,9 +49,9 @@ public class GameFrame extends JFrame {
 	private Sudoku puzzle;
 	
 	/** The newgame and hint buttons. */
-	private JButton newgame, hint;
+	private JButton newgame, hint, clear;
 	
-	private String[] difficulty = {"Facil", "Normal", "Dificil"};
+	private String[] difficulty = {"Facil", "Normal", "Dificil", "Desafio"};
 	
 	/** The selected diff. */
 	private int selectedDiff;
@@ -104,6 +105,9 @@ public class GameFrame extends JFrame {
 				case "Dificil":
 					selectedDiff = 2;
 					break;
+				case "Desafio":
+					selectedDiff = 3;
+					break;
 				}
 			}
 		};
@@ -113,7 +117,7 @@ public class GameFrame extends JFrame {
 		this.bgPanel = new BackgroundPanel(WIDTH,HEIGHT);
 		this.bgPanel.setSize(new Dimension(WIDTH,HEIGHT));
 		
-		this.buttonsPanel = new JPanel(new BorderLayout());
+		this.buttonsPanel = new JPanel();
 		
 		this.newgame = new JButton("Nuevo juego");
 	    this.newgame.addActionListener(new ActionListener()
@@ -131,11 +135,12 @@ public class GameFrame extends JFrame {
 	    		getHint();
 	    	}
 	    });
+	    
 		    
 		this.lp.add(this.bgPanel, new Integer(1));
 		
-		this.buttonsPanel.add(this.diffComboBox, BorderLayout.WEST);
-		this.buttonsPanel.add(this.newgame, BorderLayout.CENTER);
+		this.buttonsPanel.add(this.diffComboBox);
+		this.buttonsPanel.add(this.newgame);
 	    
 		this.windowPanel.add(this.lp);
 		this.windowPanel.add(this.buttonsPanel, BorderLayout.SOUTH);
@@ -166,8 +171,9 @@ public class GameFrame extends JFrame {
 	 * Rebuild.
 	 */
 	public void rebuild(){
-	
+		
 		this.puzzle = null;
+		this.images = null;
 		this.lp.removeAll();
 		this.buttonsPanel.removeAll();
 		this.windowPanel.removeAll();
@@ -176,13 +182,13 @@ public class GameFrame extends JFrame {
 		this.bgPanel.setSize(new Dimension(WIDTH,HEIGHT));
 		
 		this.puzzle = new Sudoku(this.selectedDiff);
-		this.images = new ImageButton(puzzle.getSudoku(), WIDTH);
+		this.images = new ImageButton(this.puzzle.getSudoku(), WIDTH);
 		
 		this.sPanel = new SudokuPanel(WIDTH, HEIGHT, this.images);
 		this.sPanel.setOpaque(false);
 		this.sPanel.setSize(new Dimension(WIDTH, HEIGHT));
 		
-		this.iconsPanel = new ButtonPanel(puzzle.getSudoku(), images, sPanel);
+		this.iconsPanel = new ButtonPanel(this.puzzle.getSudoku(), images, sPanel);
 		this.sPanel.newSudoku(this.puzzle.getSudoku(), images);
 
 		this.lp.add(bgPanel, new Integer(1));
@@ -190,9 +196,19 @@ public class GameFrame extends JFrame {
 
 		this.windowPanel.add(this.lp, BorderLayout.LINE_START);
 		
-		this.buttonsPanel.add(newgame, BorderLayout.CENTER);
-		this.buttonsPanel.add(diffComboBox, BorderLayout.WEST);
-		this.buttonsPanel.add(hint, BorderLayout.EAST);
+		this.clear = new JButton("Limpiar");
+	    this.clear.addActionListener(new ActionListener()
+	    {
+	    	public void actionPerformed(ActionEvent e){
+	    		clearPanel();
+	    	}
+	    });
+		
+		
+		this.buttonsPanel.add(newgame);
+		this.buttonsPanel.add(diffComboBox);
+		this.buttonsPanel.add(clear);
+		this.buttonsPanel.add(hint);
 		
 		this.windowPanel.add(this.buttonsPanel, BorderLayout.SOUTH);
 		this.windowPanel.add(this.iconsPanel, BorderLayout.LINE_END);
@@ -201,7 +217,10 @@ public class GameFrame extends JFrame {
 		
 		this.sPanel.revalidate();
 		this.sPanel.repaint();
-		
+	}
+	
+	public void clearPanel(){
+		this.sPanel.resetPuzzle();
 	}
 	
 	public void getHint(){

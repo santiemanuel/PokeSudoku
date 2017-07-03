@@ -269,6 +269,24 @@ public class SudokuPanel extends JPanel {
 			};
 		}
 	}
+	
+	public void resetPuzzle(){
+		int index = 0;
+		
+		while (index < this.puzzle.getMutableCells().size()){
+			int row = this.puzzle.getMutableCells().get(index).getX();
+			int col = this.puzzle.getMutableCells().get(index).getY();
+			selPanel.setLocation(row, col);
+			this.puzzle.makeMove(row, col, 0);
+			((JLabel)mypanels[row][col].getComponent(0)).setIcon(myimages.getImagelist().get(0));
+			index++;
+		}
+		this.puzzle.initValidvalues();
+		this.puzzle.loadValidvalues();
+
+		revalidate();
+		repaint();
+	}
 
 	/**
 	 * Paints the current row.

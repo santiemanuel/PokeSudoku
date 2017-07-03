@@ -482,7 +482,8 @@ public class SudokuGen{
 		Random random = new Random();
 		
 		if (difficulty == 1) spaces += 5;
-		if (difficulty == 2) spaces += 15;
+		if (difficulty == 2) spaces += 10;
+		if (difficulty == 3) spaces += 15;
 		
 		int index = 0;
 		int r, c;

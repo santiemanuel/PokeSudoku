@@ -29,6 +29,20 @@ public class Matrix {
 		this.values = new PokeVal[ROWS][COLUMNS];
 	}
 	
+	public Matrix(Matrix mymatrix){
+		this.values = new PokeVal[ROWS][COLUMNS];
+		for (int i=0;i<ROWS*COLUMNS;i++){
+			int row = i / ROWS;
+			int col = i % COLUMNS;
+			this.values[row][col] = new PokeVal(mymatrix.getValue(row, col).getIDPoke(),mymatrix.getValue(row, col).getNameImg());
+		}
+		this.mynumbers = mymatrix.getMynumbers();
+	}
+	
+	public ArrayList<Integer> getMynumbers() {
+		return mynumbers;
+	}
+
 	/**
 	 * Gets the rows.
 	 *

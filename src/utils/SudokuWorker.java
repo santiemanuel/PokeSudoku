@@ -2,8 +2,6 @@ package utils;
 
 import java.util.concurrent.Callable;
 
-import com.esotericsoftware.kryo.Kryo;
-
 public class SudokuWorker implements Callable<SudokuGen>{
 
 	SudokuGen sudoku;
@@ -16,12 +14,12 @@ public class SudokuWorker implements Callable<SudokuGen>{
 	@Override
 	public SudokuGen call() throws Exception {
 		
-		SudokuGen sudo = new SudokuGen(difficulty);
-		while (!createUniqueSolution(sudo) && !Thread.currentThread().isInterrupted()){
-			sudo = new SudokuGen(difficulty);
-		}
-		
-		return this.sudoku;
+			SudokuGen sudo = new SudokuGen(difficulty);
+			while (!createUniqueSolution(sudo) && !Thread.currentThread().isInterrupted()){
+				sudo = new SudokuGen(difficulty);
+			}
+			return this.sudoku;
+
 	}
 	
 	
@@ -34,12 +32,10 @@ public class SudokuWorker implements Callable<SudokuGen>{
 
 	private boolean createUniqueSolution(SudokuGen sudoku){
 
-		Kryo kryo = new Kryo();
-		
 		//copy the sudoku puzzle before using it
-		this.sudoku = kryo.copy(sudoku);
+		this.sudoku = new SudokuGen(sudoku);
 		Position availableMove = sudoku.getFirstAvailableMove();
-		while (availableMove != null){
+		while (availableMove != null && !Thread.currentThread().isInterrupted()){
 			int row,col;
 			row = availableMove.getX();
 			col = availableMove.getY();
@@ -47,11 +43,13 @@ public class SudokuWorker implements Callable<SudokuGen>{
 			sudoku.makeMove(row, col, value);
 			availableMove = sudoku.getFirstAvailableMove();
 		}
-		kryo.reset();
+
 		if (sudoku.getSolved()){
 			return true;
 		}
-		else return false;
+		else{
+			return false;
+		}
 	}
 
 }

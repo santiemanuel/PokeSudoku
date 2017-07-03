@@ -49,6 +49,11 @@ public class SudokuBoard extends Matrix {
 			
 	}
 	
+	
+	public SudokuBoard(SudokuBoard myboard){
+		this.board = new Matrix(myboard.getBoard());
+		this.newnumbers = myboard.getNewnumbers();
+	}
 	/**
 	 * Generate my numbers according to the images available.
 	 *

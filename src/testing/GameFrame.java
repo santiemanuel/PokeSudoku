@@ -132,15 +132,7 @@ public class GameFrame extends JFrame {
 	    	}
 	    });
 		    
-		this.puzzle = new Sudoku(this.selectedDiff);
-		this.images = new ImageButton(puzzle.getSudoku(), WIDTH);
-		
-		this.sPanel = new SudokuPanel(WIDTH, HEIGHT, this.images);
-		this.sPanel.setOpaque(false);
-		this.iconsPanel = new ButtonPanel(puzzle.getSudoku(), images, sPanel);
-	    
 		this.lp.add(this.bgPanel, new Integer(1));
-		this.lp.add(this.sPanel, new Integer(2));
 		
 		this.buttonsPanel.add(this.diffComboBox, BorderLayout.WEST);
 		this.buttonsPanel.add(this.newgame, BorderLayout.CENTER);
@@ -175,6 +167,7 @@ public class GameFrame extends JFrame {
 	 */
 	public void rebuild(){
 	
+		this.puzzle = null;
 		this.lp.removeAll();
 		this.buttonsPanel.removeAll();
 		this.windowPanel.removeAll();

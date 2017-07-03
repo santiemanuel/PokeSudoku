@@ -9,9 +9,6 @@ import java.util.Random;
  */
 public class SudokuGen{
 
-	/** The random. */
-	private Random random;
-	
 	/** The genboard matrix. */
 	private Matrix genboard;
 	
@@ -77,20 +74,32 @@ public class SudokuGen{
 	 *
 	 * @param sudoku the sudoku
 	 */
+	@SuppressWarnings("unchecked")
 	public SudokuGen(SudokuGen sudoku){
-		this.genboard = sudoku.genboard;
-		this.lockedCells = sudoku.lockedCells;
-		this.mutableCells = sudoku.mutableCells;
-		this.mutable = sudoku.mutable;
-		this.myboard = sudoku.myboard;
-		this.Solved = sudoku.Solved;
-		this.validvalues = sudoku.validvalues;
+		this.genboard = new Matrix(sudoku.getGenboard());
+		this.myboard = new SudokuBoard(sudoku.getMyboard());
+		this.mutable = new Boolean[SIZE][SIZE];
+		this.mutable = sudoku.getMutable();
+		this.Solved = sudoku.isSolved();
+		
+		this.validvalues = new ArrayList[SIZE][SIZE];
+		
+		for (int i=0;i<SIZE*SIZE;i++)
+		{
+				int row = i / SIZE;
+				int col = i % SIZE;
+				this.validvalues[row][col] = new ArrayList<Integer>(sudoku.validvalues[row][col]);
+		}
+					
+		this.mutableCells = new ArrayList<Position>(sudoku.mutableCells);
+		this.lockedCells = new ArrayList<Position>(sudoku.lockedCells);
+		this.removedCells = new ArrayList<Integer>(sudoku.removedCells);
 		
 	}
 	
 	public void mixSudoku(){
 		
-		this.random = new Random();
+		Random random = new Random();
 		for (int i=0;i<random.nextInt(LIMIT);i++){
 			this.genboard.SwapColumns(random.nextInt(2), random.nextInt(2), random.nextInt(2));
 			this.genboard.SwapRows(random.nextInt(2), random.nextInt(2), random.nextInt(2));
@@ -133,6 +142,10 @@ public class SudokuGen{
 		}
 	}
 	
+	public ArrayList<Integer>[][] getValidvalues(){
+		return (this.validvalues);
+	}
+	
 	/**
 	 * Load validvalues for each mutable cell.
 	 */
@@ -160,11 +173,61 @@ public class SudokuGen{
 	 * @param col The col
 	 * @param value The value
 	 */
-	public void updateValidvalue(int row, int col, int value){
-		removeInRow(row, value);
-		removeInColumn(col, value);
-		removeInBox(row, col,value);
+	public void updateValidvalue(int row, int col, int value, int oldvalue){
+		if (oldvalue == 0){
+			this.validvalues[row][col].clear();
+			removeInRow(row, value);
+			removeInColumn(col, value);
+			removeInBox(row, col, value);
+		}
+		else
+		{
+			addInRow(row, oldvalue);
+			addInColumn(col, oldvalue);
+			addInBox(row, col, oldvalue);
+		}
 	}
+	
+	public void addInRow(int row, int oldvalue){
+		for (int c=0;c<SIZE;c++){
+			int index = this.validvalues[row][c].indexOf(oldvalue);
+			if (this.genboard.getMatrix()[row][c].getIDPoke() == 0){
+				if ((index == -1) && (this.mutable[row][c])){
+					this.validvalues[row][c].add(oldvalue);
+				}
+			}
+		}
+	}
+	
+	public void addInColumn(int column, int oldvalue){
+		for (int r=0;r<SIZE;r++){
+			int index = this.validvalues[r][column].indexOf(oldvalue);
+			if (this.genboard.getMatrix()[r][column].getIDPoke() == 0){
+				if (index == -1 && (this.mutable[r][column])) 
+					this.validvalues[r][column].add(oldvalue);
+			}
+		}
+	}
+	
+	public void addInBox(int row, int col, int oldvalue){
+		int boxRow = row / 3;
+		int boxCol = col / 3;
+		
+		int startRow = (boxRow * 3);
+		int startCol = (boxCol * 3);
+		
+		for (int r = startRow; r<= (startRow+3)-1;r++){
+			for (int c = startCol; c<= (startCol+3)-1;c++){
+				int index = this.validvalues[r][c].indexOf(oldvalue);
+				if (this.genboard.getMatrix()[r][c].getIDPoke() == 0){
+					if (index == -1 && (this.mutable[r][c]))
+						this.validvalues[r][c].add(oldvalue);
+				}
+			}
+		}
+	}
+	
+	
 	
 	/**
 	 * Removes the value in row.
@@ -213,8 +276,7 @@ public class SudokuGen{
 			}
 		}
 	}
-	
-	
+
 	
 	/**
 	 * Gets the genboard.
@@ -417,6 +479,7 @@ public class SudokuGen{
 	 */
 	private void removeValues(int difficulty){
 		int spaces = 40;
+		Random random = new Random();
 		
 		if (difficulty == 1) spaces += 5;
 		if (difficulty == 2) spaces += 15;
@@ -472,11 +535,13 @@ public class SudokuGen{
 	 * @param value The value
 	 */
 	public void makeMove(int row, int col, int value){
+			
 		if (this.isValidMove(row, col, value, 1) && this.isCellMutable(row, col)){
 			Integer num = new Integer(value);
+			Integer oldvalue = new Integer(this.genboard.getMatrix()[row][col].getIDPoke());
 			this.genboard.getMatrix()[row][col].setIDPoke(value);
 			this.genboard.getMatrix()[row][col].setNameImg(num.toString()+".png");
-			updateValidvalue(row, col, value);
+			updateValidvalue(row, col, value, oldvalue);
 			this.setSolved(isSolved()); 
 		}
 	}

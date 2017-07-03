@@ -32,6 +32,16 @@ public class SudokuGen{
 	/** The mutable and locked cells. */
 	private ArrayList<Position> mutableCells, lockedCells;
 	
+	private ArrayList<Integer> removedCells;
+	
+	public ArrayList<Integer> getRemovedCells() {
+		return removedCells;
+	}
+
+	public void setRemovedCells(ArrayList<Integer> removedCells) {
+		this.removedCells = removedCells;
+	}
+
 	/** The limit of shuffling. */
 	private static final int LIMIT = 20;
 	
@@ -40,20 +50,15 @@ public class SudokuGen{
 	 */
 	public SudokuGen(int difficulty){
 		this.myboard = new SudokuBoard();
-		random = new Random();
+
 		this.mutable = new Boolean[SIZE][SIZE];
 		this.genboard = this.myboard.getBoard();
+		this.removedCells = new ArrayList<Integer>();
 		this.setSolved(false);
 		this.setMutableCells(new ArrayList<Position>());
 		this.setLockedCells(new ArrayList<Position>());
-		for (int i=0;i<random.nextInt(LIMIT);i++){
-			this.genboard.SwapColumns(random.nextInt(2), random.nextInt(2), random.nextInt(2));
-			this.genboard.SwapRows(random.nextInt(2), random.nextInt(2), random.nextInt(2));
-			this.genboard.SwapVals(random.nextInt(9)+1, random.nextInt(9)+1);
-			this.genboard.SwapRowBox(random.nextInt(2), random.nextInt(2));
-			this.genboard.SwapColumnBox(random.nextInt(2), random.nextInt(2));
-			if (random.nextInt(9) % 2 == 0 ) this.genboard.rotate();
-		}
+		
+		mixSudoku();
 		initMutables();
 		removeValues(difficulty);
 		updateMutable();
@@ -83,6 +88,19 @@ public class SudokuGen{
 		
 	}
 	
+	public void mixSudoku(){
+		
+		this.random = new Random();
+		for (int i=0;i<random.nextInt(LIMIT);i++){
+			this.genboard.SwapColumns(random.nextInt(2), random.nextInt(2), random.nextInt(2));
+			this.genboard.SwapRows(random.nextInt(2), random.nextInt(2), random.nextInt(2));
+			this.genboard.SwapVals(random.nextInt(9)+1, random.nextInt(9)+1);
+			this.genboard.SwapRowBox(random.nextInt(2), random.nextInt(2));
+			this.genboard.SwapColumnBox(random.nextInt(2), random.nextInt(2));
+			if (random.nextInt(9) % 2 == 0 ) this.genboard.rotate();
+		}
+	}
+	
 	/**
 	 * Checks if is solved.
 	 *
@@ -105,7 +123,7 @@ public class SudokuGen{
 	 * Inits the valid values.
 	 */
 	@SuppressWarnings("unchecked")
-	private void initValidvalues(){
+	public void initValidvalues(){
 		this.validvalues = new ArrayList[SIZE][SIZE];
 		for (int i=0;i<SIZE*SIZE;i++)
 		{
@@ -275,7 +293,7 @@ public class SudokuGen{
 	/**
 	 * Inits the mutable.
 	 */
-	private void initMutables(){
+	protected void initMutables(){
 		for (int r=0; r<SIZE; r++){
 			for (int c=0; c<SIZE; c++){
 				this.mutable[r][c] = true;
@@ -370,12 +388,13 @@ public class SudokuGen{
 	/**
 	 * Update mutable matrix checking for zeroes at the matrix.
 	 */
-	private void updateMutable(){
+	public void updateMutable(){
 		for (int r=0; r<SIZE; r++){
 			for (int c=0; c<SIZE; c++){
 				if (this.genboard.getMatrix()[r][c].getIDPoke() != 0 ){
 					this.mutable[r][c] = false;
 				}
+				else this.mutable[r][c] = true;
 			}
 		}
 	}
@@ -383,7 +402,7 @@ public class SudokuGen{
 	/**
 	 * Update locked checking for false mutable cells.
 	 */
-	private void updateLocked(){
+	public void updateLocked(){
 		for (int r=0; r<SIZE; r++){
 			for (int c=0; c<SIZE; c++){
 				if (this.mutable[r][c] == false){
@@ -400,7 +419,7 @@ public class SudokuGen{
 		int spaces = 40;
 		
 		if (difficulty == 1) spaces += 5;
-		if (difficulty == 2) spaces += 10;
+		if (difficulty == 2) spaces += 15;
 		
 		int index = 0;
 		int r, c;
@@ -410,12 +429,13 @@ public class SudokuGen{
 			c = random.nextInt(9);
 			if (this.genboard.getMatrix()[r][c].getIDPoke() != 0){
 				this.mutableCells.add(new Position(r,c));
-				index++;
 				this.genboard.getMatrix()[r][c].setIDPoke(0);
 				this.genboard.getMatrix()[r][c].setNameImg("0.png");
+				index++;
 			}
 		}
 	}
+	
 	
 	/**
 	 * Checks if is valid move.

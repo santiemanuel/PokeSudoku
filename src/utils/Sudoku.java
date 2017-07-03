@@ -1,7 +1,11 @@
 package utils;
 
-//External library to copy an object
-import com.esotericsoftware.kryo.Kryo;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -11,46 +15,36 @@ public class Sudoku {
 	
 	/** The sudoku. */
 	private SudokuGen sudoku;
+	private int difficulty;
 	
 	/**
 	 * Instantiates a new sudoku.
 	 */
 	public Sudoku(int difficulty){
+		this.difficulty = difficulty;
+		ExecutorService executor = Executors.newFixedThreadPool(2);
 		
-		SudokuGen auxSudoku = new SudokuGen(difficulty);
-		final long startTime = System.nanoTime();
-		while (!createUniqueSolution(auxSudoku)){
-			auxSudoku = new SudokuGen(difficulty);
+		List<Callable<SudokuGen>> callTasks = new ArrayList<Callable<SudokuGen>>();
+		for (int i=0;i<2;i++) callTasks.add(new SudokuWorker(this.difficulty));
+		
+		final long start = System.nanoTime();
+		
+		try {
+			this.sudoku = executor.invokeAny(callTasks);
+			executor.shutdownNow();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		final long duration = System.nanoTime() - startTime;
-		System.out.println(duration/1000000);
+		
+		final long duration = System.nanoTime() - start;
+		System.out.println(duration/1000000+" ms");
 
 	}
 		
-	/**
-	 * Creates the unique solution.
-	 *
-	 * @param sudoku the sudoku puzzle
-	 * @return true, if solution is unique
-	 */
-	private boolean createUniqueSolution(SudokuGen sudoku){
-
-		Kryo kryo = new Kryo();
-		
-		//copy the sudoku puzzle before using it
-		this.sudoku = kryo.copy(sudoku);
-		Position availableMove = sudoku.getFirstAvailableMove();
-		while (availableMove != null){
-			int row,col;
-			row = availableMove.getX();
-			col = availableMove.getY();
-			Integer value = sudoku.getValidvalue(row, col, 0);
-			sudoku.makeMove(row, col, value);
-			availableMove = sudoku.getFirstAvailableMove();
-		}
-		if (sudoku.getSolved())return true;
-		else return false;
-	}
 	
 	/**
 	 * Sets the sudoku.

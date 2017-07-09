@@ -1,8 +1,8 @@
 package utils;
 
-import java.net.URL;
 import java.applet.Applet;
 import java.applet.AudioClip;
+import java.net.URL;
 
 // TODO: Auto-generated Javadoc
 /**

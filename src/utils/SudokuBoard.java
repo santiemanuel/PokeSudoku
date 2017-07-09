@@ -43,7 +43,7 @@ public class SudokuBoard extends Matrix {
 		{
 			for (int c=0;c<this.board.COLUMNS;c++)
 			{
-				loadBoardCell(r, c, auxMat);  
+				loadBoardCell(r, c, auxMat[r][c]);  
 			}
 		}
 			
@@ -83,8 +83,8 @@ public class SudokuBoard extends Matrix {
 	 * @param c The column
 	 * @param auxMat The auxiliary matrix
 	 */
-	private void loadBoardCell(int r, int c, int[][] auxMat){
-		int auxNum = this.newnumbers.get(auxMat[r][c]);
+	private void loadBoardCell(int r, int c, int auxVal){
+		int auxNum = this.newnumbers.get(auxVal);
 		String auxStr = Integer.toString(auxNum)+".png";
 		this.board.values[r][c] = new PokeVal(auxNum,auxStr);
 	}

@@ -1,6 +1,6 @@
 package testing;
 
-import utils.Sudoku;
+import utils.*;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -15,12 +15,10 @@ public class MainTest {
 	 */
 	public static void main(String[] args) {
 		
-		int ind = 0;
-
+		SudokuGen sudo = new SudokuGen(0);
+		sudo.getMyboard().showSudokuMatrix();
 		System.out.println();
 		
-		
-
 	}
 
 }

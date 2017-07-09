@@ -542,7 +542,7 @@ public class SudokuGen{
 			Integer oldvalue = new Integer(this.genboard.getMatrix()[row][col].getIDPoke());
 			this.genboard.getMatrix()[row][col].setIDPoke(value);
 			this.genboard.getMatrix()[row][col].setNameImg(num.toString()+".png");
-			updateValidvalue(row, col, value, oldvalue);
+			this.updateValidvalue(row, col, value, oldvalue);
 			this.setSolved(isSolved()); 
 		}
 	}
@@ -600,8 +600,4 @@ public class SudokuGen{
 	public void setSolved(Boolean solved) {
 		Solved = solved;
 	}
-	
-    protected Object clone() throws CloneNotSupportedException {
-        return super.clone();
-    }
 }

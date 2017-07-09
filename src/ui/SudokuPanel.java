@@ -357,8 +357,6 @@ public class SudokuPanel extends JPanel {
 		}
 	}
 	
-	
-	
 	/* (non-Javadoc)
 	 * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
 	 */
@@ -377,8 +375,7 @@ public class SudokuPanel extends JPanel {
 			y = mypanels[row][column].getY()+10;
 			g.drawImage(img, x, y, null); 
 		}
-		
-		
+				
 		//Draws the marked cell state at the cell
         img = myimages.getMarkedCell().getImage();
         x = mypanels[selPanel.x][selPanel.y].getX()+10;
@@ -386,10 +383,6 @@ public class SudokuPanel extends JPanel {
         g.drawImage(img, x, y, null);
         Graphics2D g2d = (Graphics2D) g;
 
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        
-		
-	}
-	
-	
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);              	
+	}	
 }

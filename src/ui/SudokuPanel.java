@@ -93,7 +93,7 @@ public class SudokuPanel extends JPanel {
 				this.mypanels[row][col].setLayout(new BorderLayout());
 				this.mypanels[row][col].add(new JLabel());
 				((JLabel)mypanels[row][col].getComponent(0)).setIcon(myimages.getImagelist().get(0));
-				cons.weightx = cons.weighty = 1.0;
+				cons.weightx = cons.weighty = 1d;
 				cons.gridx = row;
 				cons.gridy = col;
 				cons.fill = GridBagConstraints.BOTH;
@@ -134,14 +134,14 @@ public class SudokuPanel extends JPanel {
 				this.mypanels[row][col] = new JPanel();
 				this.mypanels[row][col].setOpaque(false);
 				this.mypanels[row][col].add(createGridLabel(element, row, col));
-				cons.weightx = cons.weighty = 1.0;
+				cons.weightx = cons.weighty = 1d;
 				cons.gridx = row;
 				cons.gridy = col;
 				cons.fill = GridBagConstraints.BOTH;
 				this.add(this.mypanels[row][col], cons);
 				
 		}
-		this.setPreferredSize(this.getPreferredSize());
+		//this.setPreferredSize(this.getPreferredSize());
 
 	}
 	

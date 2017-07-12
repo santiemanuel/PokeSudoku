@@ -2,9 +2,11 @@ package testing;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -75,6 +77,7 @@ public class GameFrame extends JFrame {
 		
 		setResolution();
 		
+		this.setLayout(new FlowLayout());
 		this.selectedDiff = 0;
 		this.lp = new JLayeredPane();
 		this.lp.setPreferredSize(new Dimension(WIDTH,HEIGHT));
@@ -123,7 +126,12 @@ public class GameFrame extends JFrame {
 	    {
 	      public void actionPerformed(ActionEvent e)
 	      {
-	        rebuild();
+	        try {
+				rebuild();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 	      }
 	    });
 	    
@@ -168,8 +176,9 @@ public class GameFrame extends JFrame {
 	
 	/**
 	 * Rebuild.
+	 * @throws IOException 
 	 */
-	public void rebuild(){
+	public void rebuild() throws IOException{
 		
 		this.puzzle = null;
 		this.images = null;
@@ -190,6 +199,7 @@ public class GameFrame extends JFrame {
 		this.iconsPanel = new ButtonPanel(this.puzzle.getSudoku(), images, sPanel);
 		this.sPanel.newSudoku(this.puzzle.getSudoku(), images);
 
+		this.lp.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		this.lp.add(bgPanel, new Integer(1));
 		this.lp.add(sPanel, new Integer(2));
 

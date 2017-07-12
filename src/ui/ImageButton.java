@@ -1,12 +1,16 @@
+
 package ui;
 
 
 import java.awt.Graphics2D;
-import java.awt.Image;
-import java.net.URL;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+
+import net.coobird.thumbnailator.*;
 
 import utils.SudokuGen;
 
@@ -38,51 +42,27 @@ public class ImageButton {
 	private static int COLUMNS = 9;
 	
 	/** The width of the JPanel. */
-	private int WIDTH;
-	
+	private double SCALE;
 	
 	/**
 	 * Instantiates a new image button.
 	 *
 	 * @param puzzle The Sudoku matrix object
 	 * @param WIDTH The width of the Sudoku JPanel
+	 * @throws IOException 
 	 */
-	public ImageButton(SudokuGen puzzle, int WIDTH){
+	public ImageButton(SudokuGen puzzle, int WIDTH) throws IOException{
 		
 		//Sets the resolution of the icons depending on the size of the JPanel 
-		if (WIDTH > 600) this.WIDTH = 64; else this.WIDTH = 48;
+		if (WIDTH > 600) this.SCALE = 1.25; else this.SCALE = 1.0;
 		
 		this.imageMatrix = new ImageIcon[ROWS][COLUMNS];
 		
 		//Sets the ids of the images used in this puzzle
 		this.myimagesid = puzzle.getMyboard().getNewnumbers();
 		this.imagelist = new ArrayList<ImageIcon>();
-		Image img;
-		ImageIcon icon;
-		URL url = null;
 		
-		//Loads the list of images needed to load the matrix of images
-		for (int i=0;i<=9;i++){
-			url = getClass().getResource("/"+Integer.toString(myimagesid.get(i))+".png");
-			icon = new ImageIcon(url);
-			img = icon.getImage().getScaledInstance(this.WIDTH+15, this.WIDTH+15, Image.SCALE_SMOOTH);
-			icon.setImage(img);
-			this.imagelist.add(icon);		
-		}
-		
-		//Sets the icon for a marked cell
-		url = getClass().getResource("/marked.png");
-		icon = new ImageIcon(url);
-		img = icon.getImage().getScaledInstance(this.WIDTH, this.WIDTH, Image.SCALE_SMOOTH);
-		icon.setImage(img);
-		this.marked = icon;
-		
-		//Sets the icon for starting cells
-		url = getClass().getResource("/poke.png");
-		icon = new ImageIcon(url);
-		img = icon.getImage().getScaledInstance(this.WIDTH-10, this.WIDTH-10, Image.SCALE_SMOOTH);
-		icon.setImage(img);
-		this.pokebg = icon;
+		initImages();
 		
 		//Loads the matrix according to the id at that (row, column)
 		for (int i=0;i<ROWS*COLUMNS;i++)
@@ -93,8 +73,37 @@ public class ImageButton {
 				int index = puzzle.getMyboard().getNewnumbers().indexOf(id);
 				this.imageMatrix[row][column] = this.imagelist.get(index);
 		}
+	}
+	
+	private void initImages() throws IOException{
+		ImageIcon icon;
+		BufferedImage original,image;
 		
+		//Loads the list of images needed to load the matrix of images
+		for (int i=0;i<=9;i++){
+			original = ImageIO.read(getClass().getResourceAsStream("/"+Integer.toString(myimagesid.get(i))+".png"));
+			image = Thumbnails.of(original)
+					.scale(this.SCALE)
+					.asBufferedImage();
+			icon = new ImageIcon(image);
+			this.imagelist.add(icon);		
+		}
 		
+		//Sets the icon for a marked cell
+		original = ImageIO.read(getClass().getResourceAsStream("/marked.png"));
+		image  = Thumbnails.of(original)
+				.scale(this.SCALE-0.2)
+				.asBufferedImage();
+		icon = new ImageIcon(image);
+		this.marked = icon;
+		
+		//Sets the icon for starting cells
+		original = ImageIO.read(getClass().getResourceAsStream("/poke.png"));
+		image  = Thumbnails.of(original)
+				.scale(this.SCALE-0.2)
+				.asBufferedImage();
+		icon = new ImageIcon(image);
+		this.pokebg = icon;
 	}
 	
 	/**

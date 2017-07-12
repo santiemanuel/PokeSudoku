@@ -53,13 +53,13 @@ public class BackgroundPanel extends JPanel {
 	@Override
 	protected void paintComponent(Graphics g) {
 		
-        super.paintComponent(g);
+       super.paintComponent(g);
        g.drawImage(this.background, 0, 0, WIDTH, HEIGHT, null);
        g.drawImage(this.sudomatrix, 5, 5, WIDTH-10, HEIGHT-10, null);
         
-        Graphics2D g2d = (Graphics2D) g;
+       Graphics2D g2d = (Graphics2D) g;
 
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+       g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         
 		
 	}

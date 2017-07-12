@@ -36,7 +36,7 @@ public class ButtonPanel extends JPanel implements ActionListener{
 	
 	private int index,count,angle1;
 	private double alpha1;
-	private Timer timer;
+	private Timer timer, timericon;
 	private ImageButton images;
 	private static final int COUNT = 10;
 	private static final double	INITSIZE = 0.4;
@@ -70,14 +70,24 @@ public class ButtonPanel extends JPanel implements ActionListener{
 			this.add(buttons[i]);
 		}
 		
-		index = 1; //first button
+		index = 0; //first button
 		count = 0; //times to resize the button
 		alpha1 = 0.0f; //starting transparency for the image
 		
 		angle1 = -36; //starting angle for the image
 		
-		timer = new Timer(5,this); //start the timer with 5ms ticks
-		timer.start();	
+		timer = new Timer(400,this); //start the timer with 400ms ticks
+		
+		ActionListener timerListen = new ActionListener(){
+			public void actionPerformed(ActionEvent evt){
+				update(index);
+			  }
+		};	
+		timericon = new Timer(5, timerListen);
+		
+		timer.start(); //start animation each tick
+		
+			
 	}
 	
 	/**
@@ -98,22 +108,23 @@ public class ButtonPanel extends JPanel implements ActionListener{
 
 	/* (non-Javadoc)
 	 * 
-	 * Method called each tick of the Timer (every 5ms)
+	 * Method called each tick of the Timer (every 400ms)
 	 * 
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		
-		count++; //increase one frame of the animation
-		update(index);
-		repaint();
+		index++;
+		if (index > COUNT-1) timer.stop();
+		timericon.start();
 		
 	}
 	
 	private void update(int first){
 
-		if (count < 36){ //the animation will have max 36 frames
+		if (first == 10) timericon.stop();
+		count++;
+		if (count < 36 && timericon.isRunning()){ //the animation will have max 36 frames
 			alpha1+=0.028; //increase the transparency
 			angle1+=1.0; //increase the angle rotation by 1 degree
 			if (alpha1 > 1.0) alpha1 = 1.0; //cap the transparency to 1.0
@@ -127,9 +138,8 @@ public class ButtonPanel extends JPanel implements ActionListener{
 			count = 0; //times to animate
 			alpha1 = 0.0f; //initial transparency
 			angle1 = -36; //initial angle
-			index++; //move to the next button
+			timericon.stop();
 		}
-	if (index > ROWS) timer.stop(); //if index is greater than the amount of buttons, then stop the animation
 	
 	}
 	

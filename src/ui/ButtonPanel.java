@@ -34,11 +34,11 @@ public class ButtonPanel extends JPanel implements ActionListener{
 	/** The array of image sizes. */
 	private double[] imgsize;
 	
-	private int index,count,angle1;
-	private double alpha1;
-	private Timer timer, timericon;
+	private int index,framecount1,framecount2,angle1,angle2;
+	private double alpha1,alpha2;
+	private Timer timer;
 	private ImageButton images;
-	private static final int COUNT = 10;
+	private static final int IMGCOUNT = 10;
 	private static final double	INITSIZE = 0.4;
 	private static final int COLUMNS = 1;
 	private static final int ROWS = 9;
@@ -56,8 +56,8 @@ public class ButtonPanel extends JPanel implements ActionListener{
 		this.buttons = new JButton[puzzle.getMyboard().getNewnumbers().size()];
 		
 		this.images = images;
-		this.imgsize = new double[COUNT];
-		for (int i=0;i<COUNT;i++){
+		this.imgsize = new double[IMGCOUNT];
+		for (int i=0;i<IMGCOUNT;i++){
 			imgsize[i] = INITSIZE; //same initial scale for all buttons
 		}
 		//Sets the layout to a 9*1 GridLayout with padding 5
@@ -70,20 +70,15 @@ public class ButtonPanel extends JPanel implements ActionListener{
 			this.add(buttons[i]);
 		}
 		
-		index = 0; //first button
-		count = 0; //times to resize the button
+		index = 1; //first button
+		framecount1 = 0; //times to resize the button
+		framecount2 = 0;
 		alpha1 = 0.0f; //starting transparency for the image
-		
+		alpha2 = 0.0f;
 		angle1 = -36; //starting angle for the image
+		angle2 = -36;
 		
-		timer = new Timer(400,this); //start the timer with 400ms ticks
-		
-		ActionListener timerListen = new ActionListener(){
-			public void actionPerformed(ActionEvent evt){
-				update(index);
-			  }
-		};	
-		timericon = new Timer(5, timerListen);
+		timer = new Timer(5,this);
 		
 		timer.start(); //start animation each tick
 		
@@ -114,17 +109,17 @@ public class ButtonPanel extends JPanel implements ActionListener{
 	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		index++;
-		if (index > COUNT-1) timer.stop();
-		timericon.start();
+
+		update(index);
+		if (index > IMGCOUNT-1) timer.stop();
 		
 	}
 	
 	private void update(int first){
 
-		if (first == 10) timericon.stop();
-		count++;
-		if (count < 36 && timericon.isRunning()){ //the animation will have max 36 frames
+		if (first == 10) timer.stop();
+		framecount1++;
+		if (framecount1 < 36 && timer.isRunning()){ //the animation will have max 36 frames
 			alpha1+=0.028; //increase the transparency
 			angle1+=1.0; //increase the angle rotation by 1 degree
 			if (alpha1 > 1.0) alpha1 = 1.0; //cap the transparency to 1.0
@@ -133,12 +128,28 @@ public class ButtonPanel extends JPanel implements ActionListener{
 			ImageIcon image = new ImageIcon
 					(resizedImage(first, this.imgsize[first], angle1, alpha1)); //create the image modified with scale, rotation and alpha values
 			buttons[first].setIcon(image); //set the image for the icon at index first
+			
+			if (framecount1 > 18 && first+1<IMGCOUNT){
+				framecount2++;
+				alpha2+=0.028;
+				angle2+=1.0;
+				if (alpha2 > 1.0) alpha2 = 1.0;
+				imgsize[first+1]+=0.02;
+				image = new ImageIcon
+						(resizedImage(first+1, this.imgsize[first+1], angle2, alpha2)); //create the image modified with scale, rotation and alpha values
+				buttons[first+1].setIcon(image); //set the image for the icon at index first
+				
+			}
 		}
 		else{ //if animated 36 times the button at index first, reset and move to the next one
-			count = 0; //times to animate
-			alpha1 = 0.0f; //initial transparency
-			angle1 = -36; //initial angle
-			timericon.stop();
+			
+			framecount1 = framecount2;
+			alpha1 = alpha2;
+			angle1 = angle2;
+			framecount2 = 0; //times to animate
+			alpha2 = 0.0f; //initial transparency
+			angle2 = -36; //initial angle
+			index++;
 		}
 	
 	}

@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
-import net.coobird.thumbnailator.*;
+import net.coobird.thumbnailator.Thumbnails;
 
 import utils.SudokuGen;
 
@@ -76,34 +76,27 @@ public class ImageButton {
 	}
 	
 	private void initImages() throws IOException{
-		ImageIcon icon;
-		BufferedImage original,image;
 		
 		//Loads the list of images needed to load the matrix of images
 		for (int i=0;i<=9;i++){
-			original = ImageIO.read(getClass().getResourceAsStream("/"+Integer.toString(myimagesid.get(i))+".png"));
-			image = Thumbnails.of(original)
-					.scale(this.SCALE)
-					.asBufferedImage();
-			icon = new ImageIcon(image);
-			this.imagelist.add(icon);		
-		}
-		
+			this.imagelist.add(createIcon("/"+Integer.toString(myimagesid.get(i))+".png", 0));
+		}	
 		//Sets the icon for a marked cell
-		original = ImageIO.read(getClass().getResourceAsStream("/marked.png"));
-		image  = Thumbnails.of(original)
-				.scale(this.SCALE-0.2)
-				.asBufferedImage();
-		icon = new ImageIcon(image);
-		this.marked = icon;
+		this.marked = createIcon("/marked.png", 1);
 		
-		//Sets the icon for starting cells
-		original = ImageIO.read(getClass().getResourceAsStream("/poke.png"));
-		image  = Thumbnails.of(original)
-				.scale(this.SCALE-0.2)
+		//Sets the icon for starting cell
+		this.pokebg = createIcon("/poke.png", 1);
+	}
+	
+	private ImageIcon createIcon(String name, int id) throws IOException{
+		double scaling = this.SCALE;
+		if (id == 1) scaling -= 0.2;
+		BufferedImage original = ImageIO.read(getClass().getResourceAsStream(name));
+		original = Thumbnails.of(original)
+				.scale(scaling)
 				.asBufferedImage();
-		icon = new ImageIcon(image);
-		this.pokebg = icon;
+		ImageIcon icon = new ImageIcon(original);
+		return (icon);
 	}
 	
 	/**

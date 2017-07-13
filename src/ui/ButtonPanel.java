@@ -23,7 +23,7 @@ import utils.SudokuGen;
 /**
  * The Class ButtonPanel.
  */
-public class ButtonPanel extends JPanel implements ActionListener{
+public class ButtonPanel extends JPanel{
 	
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
@@ -78,7 +78,16 @@ public class ButtonPanel extends JPanel implements ActionListener{
 		angle1 = -36; //starting angle for the image
 		angle2 = -36;
 		
-		timer = new Timer(5,this);
+		ActionListener animationListener = new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				update(index);
+				if (index > IMGCOUNT-1) timer.stop();
+			}
+		};
+		
+		timer = new Timer(5, animationListener);
 		
 		timer.start(); //start animation each tick
 		
@@ -99,20 +108,6 @@ public class ButtonPanel extends JPanel implements ActionListener{
 		button.setActionCommand(Integer.toString(puzzle.getMyboard().getNewnumbers().get(i)));
 		button.addActionListener(sPanel.new ButtonActionListener());
 		return button;		
-	}
-
-	/* (non-Javadoc)
-	 * 
-	 * Method called each tick of the Timer (every 400ms)
-	 * 
-	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-	 */
-	@Override
-	public void actionPerformed(ActionEvent e) {
-
-		update(index);
-		if (index > IMGCOUNT-1) timer.stop();
-		
 	}
 	
 	private void update(int first){
@@ -163,7 +158,7 @@ public class ButtonPanel extends JPanel implements ActionListener{
 	 * @param alpha the new alpha
 	 * @return the buffered image
 	 */
-	private BufferedImage resizedImage(int index, double size, int angle, double alpha){
+	public BufferedImage resizedImage(int index, double size, int angle, double alpha){
 
 		BufferedImage image = (BufferedImage) this.images.getImagelist()
 				.get(index).getImage();

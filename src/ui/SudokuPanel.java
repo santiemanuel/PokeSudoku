@@ -21,6 +21,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 
 import utils.PlaySound;
 import utils.Position;
@@ -60,6 +61,7 @@ public class SudokuPanel extends JPanel {
 	/** The sound effects. */
 	private PlaySound[] effects;
 
+	private Timer tanim;
 
 	/**
 	 * Instantiates a new sudoku panel.
@@ -141,8 +143,21 @@ public class SudokuPanel extends JPanel {
 				this.add(this.mypanels[row][col], cons);
 				
 		}
-		//this.setPreferredSize(this.getPreferredSize());
+		ActionListener selListener = new ActionListener(){
 
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				clickedanim(selPanel);
+				
+			}
+			
+		};
+		
+		tanim = new Timer(5,selListener);
+	}
+	
+	private void clickedanim(Point cell){
+		
 	}
 	
 	/**

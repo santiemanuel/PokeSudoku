@@ -4,9 +4,9 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -52,7 +52,7 @@ public class GameFrame extends JFrame {
 	/** The newgame and hint buttons. */
 	private JButton newgame, hint, clear;
 	
-	private String[] difficulty = {"Facil", "Normal", "Dificil", "Desafio"};
+	private List<String> difficulty = Arrays.asList("Facil", "Normal", "Dificil", "Desafio");
 	
 	/** The selected diff. */
 	private int selectedDiff;
@@ -89,32 +89,13 @@ public class GameFrame extends JFrame {
 	
 		this.setResizable(false);
 		
-		this.diffComboBox = new JComboBox<String>(difficulty);
-		ActionListener diffActionListener = new ActionListener(){
-			
-			@Override
-			public void actionPerformed(ActionEvent e){ 
-			
-				String sel = (String) diffComboBox.getSelectedItem();
-			
-				switch (sel){
-				case "Facil":
-					selectedDiff = 0;
-					break;
-				case "Normal":
-					selectedDiff = 1;
-					break;
-				case "Dificil":
-					selectedDiff = 2;
-					break;
-				case "Desafio":
-					selectedDiff = 3;
-					break;
-				}
-			}
-		};
+		this.diffComboBox = new JComboBox<String>((String[]) difficulty.toArray());
 		
-		this.diffComboBox.addActionListener(diffActionListener);
+		this.diffComboBox.addActionListener(event ->
+		{
+			String sel = (String) diffComboBox.getSelectedItem();
+			selectedDiff = difficulty.indexOf(sel);
+		});
 		
 		this.bgPanel = new BackgroundPanel(WIDTH,HEIGHT);
 		this.bgPanel.setSize(new Dimension(WIDTH,HEIGHT));
@@ -122,27 +103,10 @@ public class GameFrame extends JFrame {
 		this.buttonsPanel = new JPanel();
 		
 		this.newgame = new JButton("Nuevo juego");
-	    this.newgame.addActionListener(new ActionListener()
-	    {
-	      public void actionPerformed(ActionEvent e)
-	      {
-	        try {
-				rebuild();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-	      }
-	    });
+	    this.newgame.addActionListener(event ->rebuild());
 	    
 	    this.hint = new JButton("Pista");
-	    this.hint.addActionListener(new ActionListener()
-	    {
-	    	public void actionPerformed(ActionEvent e){
-	    		getHint();
-	    	}
-	    });
-	    
+	    this.hint.addActionListener(event -> getHint());
 		    
 		this.lp.add(this.bgPanel, new Integer(1));
 		
@@ -153,8 +117,6 @@ public class GameFrame extends JFrame {
 		this.windowPanel.add(this.buttonsPanel, BorderLayout.SOUTH);
 		
 		this.add(windowPanel);
-		
-		
 	}
 	
 	/**
@@ -170,15 +132,14 @@ public class GameFrame extends JFrame {
 		else{
 			WIDTH = 800;
 			HEIGHT = 800;
-		}
-		
+		}		
 	}
 	
 	/**
 	 * Rebuild.
 	 * @throws IOException 
 	 */
-	public void rebuild() throws IOException{
+	public void rebuild() {
 		
 		this.puzzle = null;
 		this.images = null;
@@ -190,7 +151,12 @@ public class GameFrame extends JFrame {
 		this.bgPanel.setSize(new Dimension(WIDTH,HEIGHT));
 		
 		this.puzzle = new Sudoku(this.selectedDiff);
-		this.images = new ImageButton(this.puzzle.getSudoku(), WIDTH);
+		try {
+			this.images = new ImageButton(this.puzzle.getSudoku(), WIDTH);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		this.sPanel = new SudokuPanel(WIDTH, HEIGHT, this.images);
 		this.sPanel.setOpaque(false);
@@ -206,13 +172,7 @@ public class GameFrame extends JFrame {
 		this.windowPanel.add(this.lp, BorderLayout.LINE_START);
 		
 		this.clear = new JButton("Limpiar");
-	    this.clear.addActionListener(new ActionListener()
-	    {
-	    	public void actionPerformed(ActionEvent e){
-	    		clearPanel();
-	    	}
-	    });
-		
+	    this.clear.addActionListener(event -> clearPanel());
 		
 		this.buttonsPanel.add(newgame);
 		this.buttonsPanel.add(diffComboBox);

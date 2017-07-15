@@ -1,8 +1,5 @@
-
 package ui;
 
-
-import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -44,6 +41,7 @@ public class ImageButton {
 	/** The width of the JPanel. */
 	private double SCALE;
 	
+	
 	/**
 	 * Instantiates a new image button.
 	 *
@@ -54,8 +52,13 @@ public class ImageButton {
 	public ImageButton(SudokuGen puzzle, int WIDTH) throws IOException{
 		
 		//Sets the resolution of the icons depending on the size of the JPanel 
-		if (WIDTH > 600) this.SCALE = 1.25; else this.SCALE = 1.0;
-		
+		if (WIDTH > 600){
+			this.SCALE = 1.25;
+			
+		}else{
+			this.SCALE = 1.0;
+		};
+
 		this.imageMatrix = new ImageIcon[ROWS][COLUMNS];
 		
 		//Sets the ids of the images used in this puzzle
@@ -81,11 +84,8 @@ public class ImageButton {
 		for (int i=0;i<=9;i++){
 			this.imagelist.add(createIcon("/"+Integer.toString(myimagesid.get(i))+".png", 0));
 		}	
-		//Sets the icon for a marked cell
-		this.marked = createIcon("/marked.png", 1);
-		
-		//Sets the icon for starting cell
-		this.pokebg = createIcon("/poke.png", 1);
+		this.marked = createIcon("/marked.png", 1); //Sets the icon for a marked cell
+		this.pokebg = createIcon("/poke.png", 1); //Sets the icon for starting cell
 	}
 	
 	private ImageIcon createIcon(String name, int id) throws IOException{
@@ -128,6 +128,10 @@ public class ImageButton {
 	 */
 	public ImageIcon getMarkedCell(){
 		return (this.marked);
+	}
+	
+	public void setMarkedCell(ImageIcon image){
+		this.marked = image;
 	}
 	
 	/**
@@ -175,18 +179,6 @@ public class ImageButton {
 	 */
 	public ArrayList<ImageButton> getMyimages(){
 		return (this.myimages);
-	}
-	
-	/**
-	 * Paint.
-	 *
-	 * @param g The graphics
-	 * @param mypanel The Sudoku JPanel
-	 * @param r The row
-	 * @param c The column
-	 */
-	public void paint(Graphics2D g, SudokuPanel mypanel, int r, int c){
-		this.imageMatrix[r][c].paintIcon(mypanel, g, 0, 0);
 	}
 
 }

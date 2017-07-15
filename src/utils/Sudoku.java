@@ -22,7 +22,7 @@ public class Sudoku {
 	 */
 	public Sudoku(int difficulty){
 		this.difficulty = difficulty;
-		ExecutorService executor = Executors.newFixedThreadPool(2);
+		ExecutorService executor = Executors.newCachedThreadPool();
 
 		List<Callable<SudokuGen>> callTasks = new ArrayList<Callable<SudokuGen>>();
 		for (int i=0;i<2;i++) callTasks.add(new SudokuWorker(this.difficulty));

@@ -14,6 +14,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+
+
+
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
@@ -23,8 +29,10 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
-import utils.PlaySound;
+import net.coobird.thumbnailator.Thumbnails;
+import net.coobird.thumbnailator.filters.Transparency;
 import utils.Position;
+import utils.SoundMP3;
 import utils.SudokuGen;
 
 // TODO: Auto-generated Javadoc
@@ -59,9 +67,16 @@ public class SudokuPanel extends JPanel {
 	private Color labelBG, valueColor;
 	
 	/** The sound effects. */
-	private PlaySound[] effects;
+	private URL[] sounds;
+	private SoundMP3 sound;
 
-	private Timer tanim;
+	private Timer tanim,rotateanim;
+	
+	private double initsize, angle;
+	private int sign;
+	
+	private boolean enabled;
+	
 
 	/**
 	 * Instantiates a new sudoku panel.
@@ -98,15 +113,16 @@ public class SudokuPanel extends JPanel {
 				cons.weightx = cons.weighty = 1d;
 				cons.gridx = row;
 				cons.gridy = col;
-				cons.fill = GridBagConstraints.BOTH;
+				cons.fill = GridBagConstraints.NONE;
 				this.add(this.mypanels[row][col], cons);
 		}
 		
-		//Loads sound effects to play according to the move
-		this.effects = new PlaySound[3];
-		this.effects[0] = new PlaySound("error");
-		this.effects[1] = new PlaySound("hint");
-		this.effects[2] = new PlaySound("right");
+		this.sounds = new URL[4];
+		this.sounds[0] = getClass().getResource("/error.mp3");
+		this.sounds[1] = getClass().getResource("/hint.mp3");
+		this.sounds[2] = getClass().getResource("/right.mp3");
+		this.sounds[3] = getClass().getResource("/win.mp3");
+		
 		
 	}
 	
@@ -125,7 +141,9 @@ public class SudokuPanel extends JPanel {
 		this.lockedcells = puzzle.getLockedCells();
 		Insets Margin = new Insets(0, 0, 0, 0);
 		cons.insets = Margin;
-
+		initsize = 1.0;
+		angle = 0.0;
+		sign = -1;
 		
 		//Adds a JLabel to each JPanel at (row, col)
 		for (int i=0;i<ROWS*COLUMNS;i++)
@@ -139,24 +157,82 @@ public class SudokuPanel extends JPanel {
 				cons.weightx = cons.weighty = 1d;
 				cons.gridx = row;
 				cons.gridy = col;
-				cons.fill = GridBagConstraints.BOTH;
+				cons.fill = GridBagConstraints.NONE;
 				this.add(this.mypanels[row][col], cons);
 				
 		}
+		
+		selPanel.setLocation(0,0);
 		ActionListener selListener = new ActionListener(){
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				clickedanim(selPanel);
-				
 			}
 			
+		};	
+		
+		tanim = new Timer(10,selListener);
+		
+		ActionListener rotateListener = new ActionListener(){
+			
+			@Override
+			public void actionPerformed(ActionEvent e){
+				rotateanim(selPanel);
+			}
 		};
 		
-		tanim = new Timer(5,selListener);
+		rotateanim = new Timer(5, rotateListener);
+		enabled = true;
+	}
+	
+	private void rotateanim(Point cell){
+		angle+=4;
+		if (angle == 360.0){
+			angle = 0.0;
+			rotateanim.stop();
+		}
+		int posX = cell.x;
+		int posY = cell.y;
+		ImageIcon image = new ImageIcon
+				(resizedImage(myimages.getMarkedCell(),1.0,angle,1.0));
+		
+		((JLabel)this.mypanels[posX][posY].getComponent(0)).setIcon(image);
 	}
 	
 	private void clickedanim(Point cell){
+		int posX = cell.x;
+		int posY = cell.y;
+		
+		ImageIcon image = new ImageIcon
+				(resizedImage(myimages.getImageAt(posX,posY),initsize,0,1.0));
+		
+		((JLabel)this.mypanels[posX][posY].getComponent(0)).setIcon(image);
+		initsize+=sign*(0.015);
+		
+		if (initsize < 0.8) sign = 1;
+		
+		if (initsize == 1.0){
+			sign = -1;
+			tanim.stop();
+		}
+		
+	}
+	
+	public BufferedImage resizedImage(ImageIcon index, double size, double angle, double alpha){
+
+		BufferedImage image = (BufferedImage) index.getImage();
+		try {
+			image = Thumbnails.of(image)
+					.scale(size)
+					.rotate(angle)
+					.addFilter(new Transparency(alpha))
+					.asBufferedImage();
+		} catch (IOException e) {	
+			e.printStackTrace();
+		}
+		
+		return image;
 		
 	}
 	
@@ -180,12 +256,15 @@ public class SudokuPanel extends JPanel {
 		lbl.addMouseListener(new MouseAdapter(){
 			@Override
 			public void mouseClicked(MouseEvent e){
+				if (enabled){
 				//Checks if cell is editable
 				cleanPanels();
 				if (puzzle.isCellMutable(r, c)){
 					//If left click, sets the location to put an icon there
 					if (SwingUtilities.isLeftMouseButton(e)){
 						selPanel.setLocation(r, c);
+						if (puzzle.getGenboard().getValue(r, c).getIDPoke() != 0)
+							tanim.start();
 						paintRow(r);
 						paintColumn(c);
 						paintBox(r,c);
@@ -200,10 +279,15 @@ public class SudokuPanel extends JPanel {
 				if (value != 0) paintValue(r,c);
 				revalidate();
 				repaint();
-				
+				}
 			}
 		});
 		return lbl;
+	}
+	
+	public void switchClickState(){
+		if (this.enabled) this.enabled = false;
+		else this.enabled = true;
 	}
 	
 	
@@ -213,17 +297,25 @@ public class SudokuPanel extends JPanel {
 	 * @param buttonValue The button value
 	 */
 	public void msgButtonActionListener(Integer buttonValue, int source){
+		if (!enabled) return;
 		//Checks if cell is not a starting cell
 		if (this.puzzle.isCellMutable(selPanel.x, selPanel.y)){
 			int r = selPanel.x;
 			int c = selPanel.y;
 			//Checks for validity according to Sudoku rules, code 1 for GUI usage
 			if (this.puzzle.isValidMove(r, c, buttonValue, 1)){
-				if (source == 0) this.effects[2].play();
+				if (source == 0){
+					this.sound = new SoundMP3(this.sounds[2]);
+					this.sound.start();
+				}
 				this.puzzle.makeMove(r, c, buttonValue);
 				myimages.setImageCell(r, c, buttonValue);
+				tanim.start();
 				((JLabel)this.mypanels[r][c].getComponent(0)).setIcon(myimages.getImageAt(r,c));
-			}else this.effects[0].play();
+			}else{
+				this.sound = new SoundMP3(this.sounds[0]);
+				this.sound.start();
+			}
 			
 			revalidate();
 			repaint();
@@ -259,9 +351,11 @@ public class SudokuPanel extends JPanel {
 	
 	/**
 	 * Gets the sudoku hint and plays the first available move (1 candidate).
+	 * @throws InterruptedException 
 	 *
 	 */
-	public void getSudokuHint() {
+	public void getSudokuHint() throws InterruptedException {
+		if (!enabled) return;
 		if (puzzle.getSolved())	JOptionPane.showMessageDialog(null, "El puzzle ya esta resuelto!");
 		else{
 			int source = 1;
@@ -278,14 +372,22 @@ public class SudokuPanel extends JPanel {
 				paintRow(row);
 				paintColumn(col);
 				paintBox(row,col);
-				this.effects[1].play();
+
+				this.sound = new SoundMP3(this.sounds[1]);
+				this.sound.start();
 				
-				if (puzzle.getSolved()) JOptionPane.showMessageDialog(null, "Felicidades! Resolviste el puzzle.");
+				if (puzzle.getSolved()){
+					this.sound = new SoundMP3(this.sounds[3]);
+					this.sound.start();
+					JOptionPane.showMessageDialog(null, "Felicidades! Resolviste el puzzle.");
+				}
 			};
 		}
 	}
 	
 	public void resetPuzzle(){
+		
+		if (!enabled) return;
 		int index = 0;
 		
 		while (index < this.puzzle.getMutableCells().size()){
@@ -393,11 +495,13 @@ public class SudokuPanel extends JPanel {
 				
 		//Draws the marked cell state at the cell
         img = myimages.getMarkedCell().getImage();
+        
         x = mypanels[selPanel.x][selPanel.y].getX()+10;
         y = mypanels[selPanel.x][selPanel.y].getY()+10;
         g.drawImage(img, x, y, null);
         Graphics2D g2d = (Graphics2D) g;
 
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);              	
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);        
+        
 	}	
 }

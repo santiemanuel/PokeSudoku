@@ -2,22 +2,32 @@ package testing;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
+import javax.swing.border.EmptyBorder;
 
 import ui.BackgroundPanel;
 import ui.ButtonPanel;
 import ui.ImageButton;
+import ui.ShadowPanel;
 import ui.SudokuPanel;
 import utils.Sudoku;
 
@@ -40,6 +50,8 @@ public class GameFrame extends JFrame {
 	/** The window and background JPanel. */
 	private JPanel windowPanel, bgPanel, buttonsPanel;
 	
+	private ShadowPanel pausePanel;
+	
 	/** The Layered Pane. */
 	private JLayeredPane lp;
 	
@@ -50,7 +62,9 @@ public class GameFrame extends JFrame {
 	private Sudoku puzzle;
 	
 	/** The newgame and hint buttons. */
-	private JButton newgame, hint, clear;
+	private JButton newgame, hint, clear, pause;
+	
+	private boolean paused;
 	
 	private List<String> difficulty = Arrays.asList("Facil", "Normal", "Dificil", "Desafio");
 	
@@ -59,6 +73,12 @@ public class GameFrame extends JFrame {
 	
 	/** The difficulty combo box. */
 	private JComboBox<String> diffComboBox;
+	
+	private JLabel playTime;
+	
+	private long startTime, pausedStart, totalPause, elapsedtime;
+	private Timer timer;
+	private SimpleDateFormat date = new SimpleDateFormat("mm:ss");
 	
 	/** The width. */
 	private static int WIDTH;
@@ -73,11 +93,10 @@ public class GameFrame extends JFrame {
 	public GameFrame(){
 		
 		this.setTitle("PokeSudoku");
-		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setResolution();
 		
-		this.setLayout(new FlowLayout());
+		this.setLayout(new BorderLayout());
 		this.selectedDiff = 0;
 		this.lp = new JLayeredPane();
 		this.lp.setPreferredSize(new Dimension(WIDTH,HEIGHT));
@@ -103,10 +122,20 @@ public class GameFrame extends JFrame {
 		this.buttonsPanel = new JPanel();
 		
 		this.newgame = new JButton("Nuevo juego");
-	    this.newgame.addActionListener(event ->rebuild());
+	    this.newgame.addActionListener(event -> {
+	    	startTime = 0;
+	    	rebuild();
+	    });
 	    
 	    this.hint = new JButton("Pista");
-	    this.hint.addActionListener(event -> getHint());
+	    this.hint.addActionListener(event -> {
+			try {
+				getHint();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		});
 		    
 		this.lp.add(this.bgPanel, new Integer(1));
 		
@@ -116,7 +145,16 @@ public class GameFrame extends JFrame {
 		this.windowPanel.add(this.lp);
 		this.windowPanel.add(this.buttonsPanel, BorderLayout.SOUTH);
 		
+		
 		this.add(windowPanel);
+		
+		try {
+			BufferedImage original = ImageIO.read(getClass().getResourceAsStream("/25.png"));
+			setIconImage(original);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -141,24 +179,32 @@ public class GameFrame extends JFrame {
 	 */
 	public void rebuild() {
 		
-		this.puzzle = null;
-		this.images = null;
 		this.lp.removeAll();
 		this.buttonsPanel.removeAll();
 		this.windowPanel.removeAll();
+		this.bgPanel.removeAll();
+		
+		this.lp.revalidate();
+		this.buttonsPanel.revalidate();
+		this.windowPanel.revalidate();
+		this.bgPanel.revalidate();
 		
 		this.bgPanel = new BackgroundPanel(WIDTH,HEIGHT);
 		this.bgPanel.setSize(new Dimension(WIDTH,HEIGHT));
 		
-		this.puzzle = new Sudoku(this.selectedDiff);
+		this.timer = new Timer(50, new ClockListener());
+		this.elapsedtime = 0;
+		this.timer.start();
+		
+		this.puzzle = new Sudoku(selectedDiff);
 		try {
-			this.images = new ImageButton(this.puzzle.getSudoku(), WIDTH);
+			this.images = new ImageButton(puzzle.getSudoku(), WIDTH);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		this.sPanel = new SudokuPanel(WIDTH, HEIGHT, this.images);
+		this.sPanel = new SudokuPanel(WIDTH, HEIGHT, images);
 		this.sPanel.setOpaque(false);
 		this.sPanel.setSize(new Dimension(WIDTH, HEIGHT));
 		
@@ -166,18 +212,39 @@ public class GameFrame extends JFrame {
 		this.sPanel.newSudoku(this.puzzle.getSudoku(), images);
 
 		this.lp.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+		
+		this.pausePanel = new ShadowPanel(WIDTH, HEIGHT);
+		this.pausePanel.setOpaque(false);
+		this.pausePanel.setSize(new Dimension(WIDTH, HEIGHT));
+		
 		this.lp.add(bgPanel, new Integer(1));
 		this.lp.add(sPanel, new Integer(2));
+		this.lp.add(pausePanel, new Integer(3));
 
 		this.windowPanel.add(this.lp, BorderLayout.LINE_START);
 		
 		this.clear = new JButton("Limpiar");
 	    this.clear.addActionListener(event -> clearPanel());
-		
+	    
+	    this.pause = new JButton("Pausa");
+	    this.pause.setPreferredSize(new Dimension(100,(int) newgame.getPreferredSize().getHeight()));
+	    
+	    this.pause.addActionListener(event -> pauseGame());
+	    this.paused = false;
+	    
+	    this.startTime = System.currentTimeMillis();
+	    this.timer.start();
+	    
+	    this.playTime = new JLabel();
+	    this.playTime.setFont(playTime.getFont().deriveFont(20f));
+
+	    this.playTime.setBorder(new EmptyBorder(0, 200,0,0));
 		this.buttonsPanel.add(newgame);
 		this.buttonsPanel.add(diffComboBox);
 		this.buttonsPanel.add(clear);
 		this.buttonsPanel.add(hint);
+		this.buttonsPanel.add(pause);
+		this.buttonsPanel.add(playTime, BorderLayout.LINE_END);
 		
 		this.windowPanel.add(this.buttonsPanel, BorderLayout.SOUTH);
 		this.windowPanel.add(this.iconsPanel, BorderLayout.LINE_END);
@@ -188,11 +255,56 @@ public class GameFrame extends JFrame {
 		this.sPanel.repaint();
 	}
 	
+	private class ClockListener implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e){
+			if (!paused){
+				updateClock();
+				if (puzzle.getSudoku().isSolved()){
+					timer.stop();
+				}
+			}
+		}
+	}
+	private void updateClock(){
+		Date elapsed = new Date(System.currentTimeMillis() - startTime - elapsedtime);
+		playTime.setText("Tiempo: "+date.format(elapsed));
+	}
+	
+	private void pause(){
+			pausedStart = System.currentTimeMillis();
+			paused = true;
+	}
+	
+	private void resume(){
+			totalPause = System.currentTimeMillis() - pausedStart;
+			elapsedtime += totalPause;
+			paused = false;
+	}
+	
 	public void clearPanel(){
 		this.sPanel.resetPuzzle();
 	}
 	
-	public void getHint(){
+	public void pauseGame(){
+		if (!paused){
+			this.pausePanel.setColor();
+			this.pause.setText("Reanudar");
+			repaint();
+			pause();
+			this.sPanel.switchClickState();
+		}
+		else
+		{
+			this.pausePanel.setColor();
+			this.pause.setText("Pausar");
+			repaint();
+			resume();
+			this.sPanel.switchClickState();
+		}
+	}
+	
+	public void getHint() throws InterruptedException{
 		this.sPanel.getSudokuHint();
 	}
 

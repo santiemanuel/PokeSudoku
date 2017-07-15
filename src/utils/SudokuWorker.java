@@ -34,6 +34,7 @@ public class SudokuWorker implements Callable<SudokuGen>{
 
 		//copy the sudoku puzzle before using it
 		this.sudoku = new SudokuGen(sudoku);
+
 		Position availableMove = sudoku.getFirstAvailableMove();
 		while (availableMove != null && !Thread.currentThread().isInterrupted()){
 			int row,col;
@@ -48,6 +49,7 @@ public class SudokuWorker implements Callable<SudokuGen>{
 			return true;
 		}
 		else{
+			this.sudoku = null;
 			return false;
 		}
 	}

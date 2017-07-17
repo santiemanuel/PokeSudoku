@@ -80,6 +80,10 @@ public class GameFrame extends JFrame {
 	private Timer timer;
 	private SimpleDateFormat date = new SimpleDateFormat("mm:ss");
 	
+	private int genpuzzlebg;
+	
+	private static int WAITGEN = 20;
+	
 	/** The width. */
 	private static int WIDTH;
 	
@@ -126,6 +130,8 @@ public class GameFrame extends JFrame {
 	    	startTime = 0;
 	    	rebuild();
 	    });
+	    
+		this.puzzle = new Sudoku();
 	    
 	    this.hint = new JButton("Pista");
 	    this.hint.addActionListener(event -> {
@@ -192,11 +198,12 @@ public class GameFrame extends JFrame {
 		this.bgPanel = new BackgroundPanel(WIDTH,HEIGHT);
 		this.bgPanel.setSize(new Dimension(WIDTH,HEIGHT));
 		
-		this.timer = new Timer(50, new ClockListener());
+		this.timer = new Timer(500, new ClockListener());
 		this.elapsedtime = 0;
 		this.timer.start();
-		
-		this.puzzle = new Sudoku(selectedDiff);
+	
+		this.puzzle.newSudoku(selectedDiff);
+		this.genpuzzlebg = 0;
 		try {
 			this.images = new ImageButton(puzzle.getSudoku(), WIDTH);
 		} catch (IOException e) {
@@ -263,6 +270,11 @@ public class GameFrame extends JFrame {
 				if (puzzle.getSudoku().isSolved()){
 					timer.stop();
 				}
+			}
+			else genpuzzlebg++;
+			if (genpuzzlebg == WAITGEN){
+					genpuzzlebg = 0;
+					puzzle.bgSudoku();
 			}
 		}
 	}

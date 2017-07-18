@@ -1,5 +1,6 @@
 package utils;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -7,8 +8,13 @@ import java.util.Random;
 /**
  * The Class SudokuBoard.
  */
-public class SudokuBoard extends Matrix {
+public class SudokuBoard extends Matrix implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7827194104815451248L;
+
 	/** The board. */
 	private Matrix board;
 	

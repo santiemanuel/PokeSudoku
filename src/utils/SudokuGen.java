@@ -1,5 +1,6 @@
 package utils;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -7,7 +8,12 @@ import java.util.Random;
 /**
  * The Class SudokuGen.
  */
-public class SudokuGen{
+public class SudokuGen implements Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2340594597160451554L;
 
 	/** The genboard matrix. */
 	private Matrix genboard;

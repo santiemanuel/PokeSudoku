@@ -1,13 +1,19 @@
 package utils;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 // TODO: Auto-generated Javadoc
 /**
  * The Class Matrix.
  */
-public class Matrix {
+public class Matrix implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -672406231147569867L;
+
 	/** The rows. */
 	protected final int ROWS = 9;
 	

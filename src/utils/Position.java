@@ -1,11 +1,18 @@
 package utils;
 
+import java.io.Serializable;
+
 // TODO: Auto-generated Javadoc
 /**
  * The Class Position.
  */
-public class Position {
+public class Position implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 449713886761515430L;
+
 	/** The x. */
 	protected int x;
 	

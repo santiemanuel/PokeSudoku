@@ -1,11 +1,18 @@
 package utils;
 
+import java.io.Serializable;
+
 // TODO: Auto-generated Javadoc
 /**
  * The Class PokeVal.
  */
-public class PokeVal {
+public class PokeVal implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1302097317810607755L;
+
 	/** The ID poke. */
 	private int IDPoke;
 	

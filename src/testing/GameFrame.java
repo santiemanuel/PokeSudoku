@@ -2,9 +2,12 @@ package testing;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -50,6 +53,7 @@ public class GameFrame extends JFrame {
 	/** The window and background JPanel. */
 	private JPanel windowPanel, bgPanel, buttonsPanel;
 	
+	/** The pause panel. */
 	private ShadowPanel pausePanel;
 	
 	/** The Layered Pane. */
@@ -64,8 +68,10 @@ public class GameFrame extends JFrame {
 	/** The newgame and hint buttons. */
 	private JButton newgame, hint, clear, pause;
 	
+	/** The paused state. */
 	private boolean paused;
 	
+	/** The difficulty list. */
 	private List<String> difficulty = Arrays.asList("Facil", "Normal", "Dificil", "Desafio");
 	
 	/** The selected diff. */
@@ -74,15 +80,23 @@ public class GameFrame extends JFrame {
 	/** The difficulty combo box. */
 	private JComboBox<String> diffComboBox;
 	
+	/** The play time. */
 	private JLabel playTime;
 	
+	/** The elapsedtime. */
 	private long startTime, pausedStart, totalPause, elapsedtime;
+	
+	/** The timer. */
 	private Timer timer;
+	
+	/** The date. */
 	private SimpleDateFormat date = new SimpleDateFormat("mm:ss");
 	
+	/** The counter used to trigger the background task. */
 	private int genpuzzlebg;
 	
-	private static int WAITGEN = 20;
+	/** The limit of the counter when the game fires the bg task . */
+	private static int WAITGEN = 30;
 	
 	/** The width. */
 	private static int WIDTH;
@@ -100,6 +114,14 @@ public class GameFrame extends JFrame {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setResolution();
 		
+		this.addWindowListener(new WindowAdapter(){
+			public void windowClosing(WindowEvent e){
+				System.out.println("Cerrando");
+				puzzle.savePuzzles(); //Save the remaining puzzles when closing the game.
+				System.exit(0);
+			}
+		});
+		
 		this.setLayout(new BorderLayout());
 		this.selectedDiff = 0;
 		this.lp = new JLayeredPane();
@@ -112,7 +134,15 @@ public class GameFrame extends JFrame {
 	
 		this.setResizable(false);
 		
+		this.newgame = new JButton("Nuevo juego");
+	    this.newgame.addActionListener(event -> {
+	    	startTime = 0;
+	    	rebuild();
+	    });
+		
 		this.diffComboBox = new JComboBox<String>((String[]) difficulty.toArray());
+		
+		this.diffComboBox.setPrototypeDisplayValue((String) diffComboBox.getSelectedItem());
 		
 		this.diffComboBox.addActionListener(event ->
 		{
@@ -123,13 +153,7 @@ public class GameFrame extends JFrame {
 		this.bgPanel = new BackgroundPanel(WIDTH,HEIGHT);
 		this.bgPanel.setSize(new Dimension(WIDTH,HEIGHT));
 		
-		this.buttonsPanel = new JPanel();
-		
-		this.newgame = new JButton("Nuevo juego");
-	    this.newgame.addActionListener(event -> {
-	    	startTime = 0;
-	    	rebuild();
-	    });
+		this.buttonsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 	    
 		this.puzzle = new Sudoku();
 	    
@@ -145,9 +169,9 @@ public class GameFrame extends JFrame {
 		    
 		this.lp.add(this.bgPanel, new Integer(1));
 		
-		this.buttonsPanel.add(this.diffComboBox);
 		this.buttonsPanel.add(this.newgame);
-	    
+		this.buttonsPanel.add(this.diffComboBox);
+		
 		this.windowPanel.add(this.lp);
 		this.windowPanel.add(this.buttonsPanel, BorderLayout.SOUTH);
 		
@@ -181,7 +205,6 @@ public class GameFrame extends JFrame {
 	
 	/**
 	 * Rebuild.
-	 * @throws IOException 
 	 */
 	public void rebuild() {
 		
@@ -204,6 +227,7 @@ public class GameFrame extends JFrame {
 	
 		this.puzzle.newSudoku(selectedDiff);
 		this.genpuzzlebg = 0;
+		
 		try {
 			this.images = new ImageButton(puzzle.getSudoku(), WIDTH);
 		} catch (IOException e) {
@@ -245,7 +269,7 @@ public class GameFrame extends JFrame {
 	    this.playTime = new JLabel();
 	    this.playTime.setFont(playTime.getFont().deriveFont(20f));
 
-	    this.playTime.setBorder(new EmptyBorder(0, 200,0,0));
+	    this.playTime.setBorder(new EmptyBorder(0, 100,0,0));
 		this.buttonsPanel.add(newgame);
 		this.buttonsPanel.add(diffComboBox);
 		this.buttonsPanel.add(clear);
@@ -262,42 +286,72 @@ public class GameFrame extends JFrame {
 		this.sPanel.repaint();
 	}
 	
+	
+	/**
+	 * The listener interface for receiving clock events.
+	 * The class that is interested in processing a clock
+	 * event implements this interface, and the object created
+	 * with that class is registered with a component using the
+	 * component's <code>addClockListener<code> method. When
+	 * the clock event occurs, that object's appropriate
+	 * method is invoked.
+	 *
+	 * @see ClockEvent
+	 */
 	private class ClockListener implements ActionListener {
+		
+		/* (non-Javadoc)
+		 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+		 */
 		@Override
 		public void actionPerformed(ActionEvent e){
 			if (!paused){
 				updateClock();
-				if (puzzle.getSudoku().isSolved()){
-					timer.stop();
-				}
-			}
-			else genpuzzlebg++;
+				if (puzzle.getSudoku().isSolved()) timer.stop();
+			}else genpuzzlebg++;
+			
 			if (genpuzzlebg == WAITGEN){
-					genpuzzlebg = 0;
-					puzzle.bgSudoku();
+				genpuzzlebg = 0;
+				puzzle.bgSudoku();
 			}
 		}
 	}
+	
+	/**
+	 * Update clock.
+	 */
 	private void updateClock(){
 		Date elapsed = new Date(System.currentTimeMillis() - startTime - elapsedtime);
 		playTime.setText("Tiempo: "+date.format(elapsed));
 	}
 	
+	/**
+	 * Pause.
+	 */
 	private void pause(){
-			pausedStart = System.currentTimeMillis();
-			paused = true;
+		pausedStart = System.currentTimeMillis();
+		paused = true;
 	}
 	
+	/**
+	 * Resume.
+	 */
 	private void resume(){
-			totalPause = System.currentTimeMillis() - pausedStart;
-			elapsedtime += totalPause;
-			paused = false;
+		totalPause = System.currentTimeMillis() - pausedStart;
+		elapsedtime += totalPause;
+		paused = false;
 	}
 	
+	/**
+	 * Clear panel.
+	 */
 	public void clearPanel(){
 		this.sPanel.resetPuzzle();
 	}
 	
+	/**
+	 * Pause game.
+	 */
 	public void pauseGame(){
 		if (!paused){
 			this.pausePanel.setColor();
@@ -316,6 +370,12 @@ public class GameFrame extends JFrame {
 		}
 	}
 	
+	/**
+	 * Gets the hint.
+	 *
+	 * @return the hint
+	 * @throws InterruptedException the interrupted exception
+	 */
 	public void getHint() throws InterruptedException{
 		this.sPanel.getSudokuHint();
 	}

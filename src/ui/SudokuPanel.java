@@ -70,9 +70,9 @@ public class SudokuPanel extends JPanel {
 	private URL[] sounds;
 	private SoundMP3 sound;
 
-	private Timer tanim,rotateanim;
+	private Timer tanim;
 	
-	private double initsize, angle;
+	private double initsize;
 	private int sign;
 	
 	private boolean enabled;
@@ -142,7 +142,6 @@ public class SudokuPanel extends JPanel {
 		Insets Margin = new Insets(0, 0, 0, 0);
 		cons.insets = Margin;
 		initsize = 1.0;
-		angle = 0.0;
 		sign = -1;
 		
 		//Adds a JLabel to each JPanel at (row, col)
@@ -174,30 +173,7 @@ public class SudokuPanel extends JPanel {
 		
 		tanim = new Timer(10,selListener);
 		
-		ActionListener rotateListener = new ActionListener(){
-			
-			@Override
-			public void actionPerformed(ActionEvent e){
-				rotateanim(selPanel);
-			}
-		};
-		
-		rotateanim = new Timer(5, rotateListener);
 		enabled = true;
-	}
-	
-	private void rotateanim(Point cell){
-		angle+=4;
-		if (angle == 360.0){
-			angle = 0.0;
-			rotateanim.stop();
-		}
-		int posX = cell.x;
-		int posY = cell.y;
-		ImageIcon image = new ImageIcon
-				(resizedImage(myimages.getMarkedCell(),1.0,angle,1.0));
-		
-		((JLabel)this.mypanels[posX][posY].getComponent(0)).setIcon(image);
 	}
 	
 	private void clickedanim(Point cell){
@@ -344,7 +320,6 @@ public class SudokuPanel extends JPanel {
 			Integer value = Integer.parseInt(e.getActionCommand());
 			int source = 0;
 			msgButtonActionListener(value, source);
-			if (puzzle.getSolved()) JOptionPane.showMessageDialog(null, "Felicidades! Resolviste el puzzle.");
 		}
 		
 	}
@@ -379,7 +354,6 @@ public class SudokuPanel extends JPanel {
 				if (puzzle.getSolved()){
 					this.sound = new SoundMP3(this.sounds[3]);
 					this.sound.start();
-					JOptionPane.showMessageDialog(null, "Felicidades! Resolviste el puzzle.");
 				}
 			};
 		}

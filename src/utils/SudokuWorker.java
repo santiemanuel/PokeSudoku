@@ -1,22 +1,25 @@
 package utils;
 
+import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
 public class SudokuWorker implements Callable<SudokuGen>{
 
 	SudokuGen sudoku;
 	int difficulty;
+	ArrayList<Integer> unlocked;
 	
-	public SudokuWorker(int difficulty){
+	public SudokuWorker(int difficulty, ArrayList<Integer> unlockedimgs){
 		this.difficulty = difficulty;
+		this.unlocked = unlockedimgs;
 	}
 	
 	@Override
 	public SudokuGen call() throws Exception {
 		
-			SudokuGen sudo = new SudokuGen(difficulty);
+			SudokuGen sudo = new SudokuGen(difficulty, unlocked);
 			while (!createUniqueSolution(sudo) && !Thread.currentThread().isInterrupted()){
-				sudo = new SudokuGen(difficulty);
+				sudo = new SudokuGen(difficulty, unlocked);
 			}
 			return this.sudoku;
 

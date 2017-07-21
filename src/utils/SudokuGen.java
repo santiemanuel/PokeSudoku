@@ -51,8 +51,8 @@ public class SudokuGen implements Serializable{
 	/**
 	 * Instantiates a new sudoku gen.
 	 */
-	public SudokuGen(int difficulty){
-		this.myboard = new SudokuBoard();
+	public SudokuGen(int difficulty, ArrayList<Integer> unlocked){
+		this.myboard = new SudokuBoard(unlocked);
 
 		this.mutable = new Boolean[SIZE][SIZE];
 		this.genboard = this.myboard.getBoard();

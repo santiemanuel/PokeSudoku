@@ -15,7 +15,7 @@ public class MainTest {
 	 */
 	public static void main(String[] args) {
 		
-		SudokuGen sudo = new SudokuGen(0);
+		SudokuGen sudo = new SudokuGen(0,null);
 		sudo.getMyboard().showSudokuMatrix();
 		System.out.println();
 		

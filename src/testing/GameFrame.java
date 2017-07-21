@@ -22,16 +22,18 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import javax.swing.JLayeredPane;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
-import javax.swing.border.EmptyBorder;
 
 import ui.BackgroundPanel;
 import ui.ButtonPanel;
 import ui.ImageButton;
 import ui.ShadowPanel;
 import ui.SudokuPanel;
+import ui.WinDialog;
+import utils.PlayerManager;
 import utils.Sudoku;
 
 
@@ -104,6 +106,10 @@ public class GameFrame extends JFrame {
 	/** The height. */
 	private static int HEIGHT;
 	
+	private String playername;
+	
+	private PlayerManager playerman;
+	
 	/**
 	 * Instantiates a new game frame.
 	 */
@@ -114,10 +120,15 @@ public class GameFrame extends JFrame {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setResolution();
 		
+		this.playername = JOptionPane.showInputDialog("Ingresa tu nombre");
+		
+		playerman = new PlayerManager(this.playername);
+		
 		this.addWindowListener(new WindowAdapter(){
 			public void windowClosing(WindowEvent e){
 				System.out.println("Cerrando");
 				puzzle.savePuzzles(); //Save the remaining puzzles when closing the game.
+				playerman.saveUser(); //Save the user info when closing the game.
 				System.exit(0);
 			}
 		});
@@ -126,19 +137,11 @@ public class GameFrame extends JFrame {
 		this.selectedDiff = 0;
 		this.lp = new JLayeredPane();
 		this.lp.setPreferredSize(new Dimension(WIDTH,HEIGHT));
-		this.lp.setMinimumSize(new Dimension(WIDTH,HEIGHT));
 		
 		this.windowPanel = new JPanel(new BorderLayout());
 		windowPanel.setPreferredSize(new Dimension(WIDTH+100,HEIGHT+30));		
-		windowPanel.setMinimumSize(new Dimension(WIDTH+100,HEIGHT+30));
 	
 		this.setResizable(false);
-		
-		this.newgame = new JButton("Nuevo juego");
-	    this.newgame.addActionListener(event -> {
-	    	startTime = 0;
-	    	rebuild();
-	    });
 		
 		this.diffComboBox = new JComboBox<String>((String[]) difficulty.toArray());
 		
@@ -155,9 +158,19 @@ public class GameFrame extends JFrame {
 		
 		this.buttonsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 	    
-		this.puzzle = new Sudoku();
+		this.puzzle = new Sudoku(playerman.getUser());
+		
+		System.out.println("Nivel actual: "+playerman.getUser().getLevel());
+		System.out.println("Experiencia actual: "+playerman.getUser().getExperience());
+		System.out.println("Pistas disponibles: "+playerman.getUser().getAvailablehints());
+		
+		this.newgame = new JButton("Nuevo juego");
+	    this.newgame.addActionListener(event -> {
+	    	startTime = 0;
+	    	rebuild();
+	    });
 	    
-	    this.hint = new JButton("Pista");
+	    this.hint = new JButton("Pista: "+playerman.getUser().getAvailablehints());
 	    this.hint.addActionListener(event -> {
 			try {
 				getHint();
@@ -173,7 +186,7 @@ public class GameFrame extends JFrame {
 		this.buttonsPanel.add(this.diffComboBox);
 		
 		this.windowPanel.add(this.lp);
-		this.windowPanel.add(this.buttonsPanel, BorderLayout.SOUTH);
+		this.windowPanel.add(this.buttonsPanel, BorderLayout.NORTH);
 		
 		
 		this.add(windowPanel);
@@ -217,6 +230,8 @@ public class GameFrame extends JFrame {
 		this.buttonsPanel.revalidate();
 		this.windowPanel.revalidate();
 		this.bgPanel.revalidate();
+		
+		System.out.println("Progreso actual: "+playerman.getUser().currentExp());
 		
 		this.bgPanel = new BackgroundPanel(WIDTH,HEIGHT);
 		this.bgPanel.setSize(new Dimension(WIDTH,HEIGHT));
@@ -269,15 +284,14 @@ public class GameFrame extends JFrame {
 	    this.playTime = new JLabel();
 	    this.playTime.setFont(playTime.getFont().deriveFont(20f));
 
-	    this.playTime.setBorder(new EmptyBorder(0, 100,0,0));
 		this.buttonsPanel.add(newgame);
 		this.buttonsPanel.add(diffComboBox);
 		this.buttonsPanel.add(clear);
 		this.buttonsPanel.add(hint);
 		this.buttonsPanel.add(pause);
-		this.buttonsPanel.add(playTime, BorderLayout.LINE_END);
+		this.buttonsPanel.add(playTime);
 		
-		this.windowPanel.add(this.buttonsPanel, BorderLayout.SOUTH);
+		this.windowPanel.add(this.buttonsPanel, BorderLayout.NORTH);
 		this.windowPanel.add(this.iconsPanel, BorderLayout.LINE_END);
 		
 		this.add(windowPanel);
@@ -307,7 +321,15 @@ public class GameFrame extends JFrame {
 		public void actionPerformed(ActionEvent e){
 			if (!paused){
 				updateClock();
-				if (puzzle.getSudoku().isSolved()) timer.stop();
+				if (puzzle.getSudoku().isSolved()){
+					
+					int levelBefore = playerman.getUser().getLevel();
+					playerman.getUser().winGame(selectedDiff);
+					int levelAfter = playerman.getUser().getLevel();
+					WinDialog dialog = new WinDialog(playerman.getUser(),levelBefore,levelAfter);
+					JOptionPane.showMessageDialog(null,dialog.getItems());
+					timer.stop();
+				}
 			}else genpuzzlebg++;
 			
 			if (genpuzzlebg == WAITGEN){
@@ -377,7 +399,13 @@ public class GameFrame extends JFrame {
 	 * @throws InterruptedException the interrupted exception
 	 */
 	public void getHint() throws InterruptedException{
-		this.sPanel.getSudokuHint();
+		int userhints = playerman.getUser().getAvailablehints();
+		if (userhints > 0){
+			this.sPanel.getSudokuHint();
+			userhints--;
+			playerman.getUser().setAvailablehints(userhints);
+			this.hint.setText("Pista: "+playerman.getUser().getAvailablehints());
+		}else	JOptionPane.showMessageDialog(null, "No te quedan pistas disponibles, gana partidas para recargar");
 	}
 
 	/**

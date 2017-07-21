@@ -11,6 +11,8 @@ import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,25 +36,39 @@ public class Sudoku implements Serializable {
 	private static final int PUZZLECOUNT = 10;
 	private static final int DIFFCOUNT = 4;
 	private HashMap<Integer, ArrayList<SudokuGen>> sudokulist;
+	private Player player;
 
-	
 	/**
 	 * Instantiates a new sudoku.
 	 * Creates the folder data if not found, and load the file puzzles.ser if exists
 	 */
-	public Sudoku(){
+	public Sudoku(Player playername){
 		sudokulist = new HashMap<Integer, ArrayList<SudokuGen>>();
 		for (int i=0;i<DIFFCOUNT;i++){
 			sudokulist.put(i, new ArrayList<SudokuGen>());
 		}
 		
-		dirPuzzles = new File(getClass().getProtectionDomain().
-				getCodeSource().getLocation().getFile()+File.separator+"data");
+		this.player = playername;
+		String path = getClass().getProtectionDomain().getCodeSource().getLocation().getPath(); 
+		try {
+			path = URLDecoder.decode(path, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		path = path+"data";
+		dirPuzzles = new File(path);;
+		
+		System.out.println("Directorio data: "+dirPuzzles.toString());
 		if (!dirPuzzles.exists()){
 			dirPuzzles.mkdir();
 		}
 		
-		File filePuzzles = new File(dirPuzzles+File.separator+"puzzles.ser");
+		String name = player.getName();
+		
+		File filePuzzles = new File(dirPuzzles+File.separator+"puzzles"+name+".ser");
+		
+		System.out.println("Archivo puzzle: "+filePuzzles);
 		
 		if (filePuzzles.exists()){
 			sudokulist = load(filePuzzles);
@@ -60,7 +76,6 @@ public class Sudoku implements Serializable {
 		}
 			
 	}
-	
 
 	/**
 	 * Load the file and deserialize it
@@ -95,9 +110,10 @@ public class Sudoku implements Serializable {
 	/**
 	 * Serialize the HashMap and save it to puzzles.ser
 	 */
-	public void save(){
+	public void save(Player playername){
 		System.out.println("Guardando estado");
-		File puzzlefile = new File(dirPuzzles+File.separator+"puzzles.ser");
+		String name = playername.getName();
+		File puzzlefile = new File(dirPuzzles+File.separator+"puzzles"+name+".ser");
 		try {
 			FileOutputStream puzzlestream = new FileOutputStream(puzzlefile, false);
 			OutputStream buffer = new BufferedOutputStream(puzzlestream);
@@ -128,7 +144,7 @@ public class Sudoku implements Serializable {
 		}
 		
 		System.out.println("Dificultades sin puzzles: "+currentcount);
-		save(); //Save the updated file
+		save(player); //Save the updated file
 	}
 	
 	/**
@@ -141,7 +157,7 @@ public class Sudoku implements Serializable {
 		int puzzleCount = puzzlesforDiff.size();
 		if (puzzleCount == 0){
 			System.out.println("No existen puzzles generados. Generando uno nuevo.");
-			this.sudoku = genUnique(this.difficulty);
+			this.sudoku = genUnique(this.difficulty,this.player.getUnlockedmonster());
 		}
 		else{
 			System.out.println("Existen "+puzzleCount+" puzzles disponibles, cargando.");
@@ -158,13 +174,13 @@ public class Sudoku implements Serializable {
 	 * @param difficulty the difficulty
 	 * @return the sudoku gen
 	 */
-	private SudokuGen genUnique(int difficulty){
+	private SudokuGen genUnique(int difficulty, ArrayList<Integer> unlockedimgs){
 		
 		final long start = System.nanoTime();
 		ExecutorService executor = Executors.newCachedThreadPool();
 
 		List<Callable<SudokuGen>> callTasks = new ArrayList<Callable<SudokuGen>>();
-		for (int i=0;i<2;i++) callTasks.add(new SudokuWorker(difficulty));
+		for (int i=0;i<2;i++) callTasks.add(new SudokuWorker(difficulty, unlockedimgs));
 		
 		try {
 			SudokuGen generatedsudoku = executor.invokeAny(callTasks);
@@ -194,7 +210,7 @@ public class Sudoku implements Serializable {
 		for (int i=0;i<DIFFCOUNT;i++){
 			ArrayList<SudokuGen> sudokuDiff = sudokulist.get(i); //get the list of puzzles for diff i
 			if (sudokuDiff.size() < PUZZLECOUNT){
-				SudokuGen futurePuzzle = genUnique(i); //generate new puzzle with diff i
+				SudokuGen futurePuzzle = genUnique(i,this.player.getUnlockedmonster()); //generate new puzzle with diff i
 				this.sudokulist.remove(i); //remove the list from the hashmap
 				sudokuDiff.add(futurePuzzle); //add the new puzzle to the list
 				System.out.println("Puzzles disponibles para dificultad "+i+": "+sudokuDiff.size());

@@ -21,16 +21,13 @@ public class SudokuBoard extends Matrix implements Serializable {
 	/** The newnumbers. */
 	private ArrayList<Integer> newnumbers;
 	
-	/** The Constant IMAGECOUNT. */
-	private static final int IMAGECOUNT = 377;
-	
 	/**
 	 * Instantiates a new sudoku board.
 	 */
-	public SudokuBoard(){
+	public SudokuBoard(ArrayList<Integer> unlocked){
 		
 		//this.newnumbers = new ArrayList<Integer>();
-		this.newnumbers = generateMyNumbers();
+		this.newnumbers = generateMyNumbers(unlocked);
 		this.board = new Matrix();
 		this.board.setMynumbers(this.newnumbers);
 		int[][] auxMat=new int[][]{
@@ -65,17 +62,18 @@ public class SudokuBoard extends Matrix implements Serializable {
 	 *
 	 * @return the array list
 	 */
-	private ArrayList<Integer> generateMyNumbers(){
+	private ArrayList<Integer> generateMyNumbers(ArrayList<Integer> unlocked){
 		Random random = new Random();
 		int genNumber;
+		int count = unlocked.size();
 		
 		ArrayList<Integer> auxList = new ArrayList<Integer>();
 		
 		auxList.add(0);
 		while (auxList.size() < 10){
-			genNumber = random.nextInt(IMAGECOUNT)+1;
-			if (!auxList.contains(genNumber)){
-				auxList.add(genNumber);
+			genNumber = random.nextInt(count);
+			if (!auxList.contains(unlocked.get(genNumber))){
+				auxList.add(unlocked.get(genNumber));
 			}
 		}
 		

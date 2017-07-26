@@ -3,6 +3,7 @@ package testing;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,7 +30,9 @@ import javax.swing.Timer;
 
 import ui.BackgroundPanel;
 import ui.ButtonPanel;
+import ui.DexFrame;
 import ui.ImageButton;
+import ui.ProfileFrame;
 import ui.ShadowPanel;
 import ui.SudokuPanel;
 import ui.WinDialog;
@@ -68,7 +71,7 @@ public class GameFrame extends JFrame {
 	private Sudoku puzzle;
 	
 	/** The newgame and hint buttons. */
-	private JButton newgame, hint, clear, pause;
+	private JButton newgame, hint, clear, pause, dex, profile;
 	
 	/** The paused state. */
 	private boolean paused;
@@ -110,6 +113,7 @@ public class GameFrame extends JFrame {
 	
 	private PlayerManager playerman;
 	
+	private DexFrame dexframe;
 	/**
 	 * Instantiates a new game frame.
 	 */
@@ -141,7 +145,7 @@ public class GameFrame extends JFrame {
 		this.windowPanel = new JPanel(new BorderLayout());
 		windowPanel.setPreferredSize(new Dimension(WIDTH+100,HEIGHT+30));		
 	
-		this.setResizable(false);
+		//this.setResizable(false);
 		
 		this.diffComboBox = new JComboBox<String>((String[]) difficulty.toArray());
 		
@@ -164,22 +168,13 @@ public class GameFrame extends JFrame {
 		System.out.println("Experiencia actual: "+playerman.getUser().getExperience());
 		System.out.println("Pistas disponibles: "+playerman.getUser().getAvailablehints());
 		
-		this.newgame = new JButton("Nuevo juego");
+		this.newgame = new JButton("Nuevo");
 	    this.newgame.addActionListener(event -> {
 	    	startTime = 0;
 	    	rebuild();
 	    });
 	    
-	    this.hint = new JButton("Pista: "+playerman.getUser().getAvailablehints());
-	    this.hint.addActionListener(event -> {
-			try {
-				getHint();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		});
-		    
+
 		this.lp.add(this.bgPanel, new Integer(1));
 		
 		this.buttonsPanel.add(this.newgame);
@@ -231,8 +226,6 @@ public class GameFrame extends JFrame {
 		this.windowPanel.revalidate();
 		this.bgPanel.revalidate();
 		
-		System.out.println("Progreso actual: "+playerman.getUser().currentExp());
-		
 		this.bgPanel = new BackgroundPanel(WIDTH,HEIGHT);
 		this.bgPanel.setSize(new Dimension(WIDTH,HEIGHT));
 		
@@ -246,7 +239,6 @@ public class GameFrame extends JFrame {
 		try {
 			this.images = new ImageButton(puzzle.getSudoku(), WIDTH);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -270,25 +262,52 @@ public class GameFrame extends JFrame {
 		this.windowPanel.add(this.lp, BorderLayout.LINE_START);
 		
 		this.clear = new JButton("Limpiar");
+		this.clear.setMargin(new Insets(1,1,3,3));
 	    this.clear.addActionListener(event -> clearPanel());
 	    
 	    this.pause = new JButton("Pausa");
-	    this.pause.setPreferredSize(new Dimension(100,(int) newgame.getPreferredSize().getHeight()));
+	    
+	    this.pause.setPreferredSize(new Dimension(80,(int) newgame.getPreferredSize().getHeight()));
+	    this.pause.setMargin(new Insets(1,1,3,3));
 	    
 	    this.pause.addActionListener(event -> pauseGame());
 	    this.paused = false;
 	    
+	    this.hint = new JButton("Pista: "+playerman.getUser().getAvailablehints());
+	    this.hint.setMargin(new Insets(1,1,3,3));
+	    this.hint.addActionListener(event -> {
+			try {
+				getHint();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		});
+	    
+	    this.profile = new JButton("Perfil");
+	    this.profile.setMargin(new Insets(1,1,3,3));
+	    this.profile.addActionListener(event -> new ProfileFrame(playerman.getUser()));
+	    
+	    this.dex = new JButton("Pokedex");
+	    this.dex.setMargin(new Insets(1,1,3,3));
+	    this.dex.addActionListener(event ->{
+	    	this.dexframe = new DexFrame(playerman.getUser());
+	    	this.dexframe.showMenu(playerman.getUser());
+	    });
+	   
 	    this.startTime = System.currentTimeMillis();
 	    this.timer.start();
 	    
 	    this.playTime = new JLabel();
-	    this.playTime.setFont(playTime.getFont().deriveFont(20f));
+	    this.playTime.setFont(playTime.getFont().deriveFont(18f));
 
 		this.buttonsPanel.add(newgame);
 		this.buttonsPanel.add(diffComboBox);
 		this.buttonsPanel.add(clear);
 		this.buttonsPanel.add(hint);
 		this.buttonsPanel.add(pause);
+		this.buttonsPanel.add(dex);
+		this.buttonsPanel.add(profile);
 		this.buttonsPanel.add(playTime);
 		
 		this.windowPanel.add(this.buttonsPanel, BorderLayout.NORTH);
@@ -321,12 +340,18 @@ public class GameFrame extends JFrame {
 		public void actionPerformed(ActionEvent e){
 			if (!paused){
 				updateClock();
-				if (puzzle.getSudoku().isSolved()){
+				if (puzzle.getSudoku().isSolved() && timer.isRunning()){
 					
+					long time = System.currentTimeMillis() - startTime - elapsedtime;
+					System.out.println("ActionPerformed llamado");
 					int levelBefore = playerman.getUser().getLevel();
-					playerman.getUser().winGame(selectedDiff);
+					playerman.getUser().winGame(selectedDiff, time);
 					int levelAfter = playerman.getUser().getLevel();
 					WinDialog dialog = new WinDialog(playerman.getUser(),levelBefore,levelAfter);
+					if (levelAfter > levelBefore){
+						dexframe.removeAll();
+						dexframe = new DexFrame(playerman.getUser());
+					}
 					JOptionPane.showMessageDialog(null,dialog.getItems());
 					timer.stop();
 				}
@@ -344,7 +369,7 @@ public class GameFrame extends JFrame {
 	 */
 	private void updateClock(){
 		Date elapsed = new Date(System.currentTimeMillis() - startTime - elapsedtime);
-		playTime.setText("Tiempo: "+date.format(elapsed));
+		playTime.setText(date.format(elapsed));
 	}
 	
 	/**

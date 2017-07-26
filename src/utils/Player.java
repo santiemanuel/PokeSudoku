@@ -1,6 +1,7 @@
 package utils;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -13,21 +14,67 @@ public class Player implements Serializable {
 	private String name;
 	private int level;
 	private ArrayList<Integer> unlockedmonster;
+	private int[] catchcount;
 	private int experience;
 	private int availablehints;
 	private int[] wonbydiff;
+	private SimpleDateFormat date = new SimpleDateFormat("mm:ss");
+	private String playtime;
+	private long totaltime;
+	private int profilepic;
+	private long[] records;
+	private String[] bestplay;
+	private final int UNOWN = 201;
 	
-	private static final int IMGCOUNT = 377;
+	private final int IMGCOUNT = 388;
+	private final int DIFFCOUNT = 4;
 	
 	public Player(String name, int amount){
 		this.setName(name);
 		this.unlockedmonster = new ArrayList<Integer>();
-		this.setUnlockedmonster(generateMyNumbers(amount, unlockedmonster));
+		this.unlockedmonster.add(0);
+		this.catchcount = new int[1028];
+		this.setUnlockedmonster(initMyNumbers(amount));
 		this.setLevel();
 		this.experience = 0;
 		this.setAvailablehints(10);
-		this.wonbydiff = new int[4];
-		for (int i=0;i<4;i++) this.wonbydiff[i] = 0;
+		this.wonbydiff = new int[DIFFCOUNT];
+		this.records = new long[DIFFCOUNT];
+		this.bestplay = new String[DIFFCOUNT];
+		this.totaltime = 0;
+		this.setPlaytime(date.format(totaltime));
+		for (int i=0;i<DIFFCOUNT;i++){
+			this.wonbydiff[i] = 0;
+			this.records[i] = 0;
+			this.bestplay[i] = date.format(this.records[i]);
+		}
+		this.setProfilepic(getUnlockedmonster().get(1));
+		
+	}
+	
+	private ArrayList<Integer> initMyNumbers(int amount){
+		Random random = new Random();
+		int genNumber;
+		int unique = 300;
+		
+		ArrayList<Integer> auxList = new ArrayList<Integer>();
+		
+		while (auxList.size() < unique){
+			genNumber = random.nextInt(IMGCOUNT)+1;
+			if (!auxList.contains(genNumber)){
+				if (genNumber == UNOWN){
+					genNumber = random.nextInt(28)+1000;
+					if (!auxList.contains(genNumber)){
+						auxList.add(genNumber);
+						this.catchcount[genNumber]++;
+					}
+				} else{
+					auxList.add(genNumber);
+					this.catchcount[genNumber]++;
+				}
+			}
+		}
+		return auxList;
 	}
 	
 	public int calculateLevel(){
@@ -43,7 +90,10 @@ public class Player implements Serializable {
 	public void setUnlockedmonster(ArrayList<Integer> unlockedmonster) {
 		while (!unlockedmonster.isEmpty()){
 			Integer imgID = unlockedmonster.get(0);
-			this.unlockedmonster.add(imgID);
+			if (this.unlockedmonster.indexOf(imgID) == -1){
+				this.unlockedmonster.add(imgID);	
+			}
+			this.catchcount[imgID]++;
 			unlockedmonster.remove(0);
 		}
 	}
@@ -92,20 +142,67 @@ public class Player implements Serializable {
 		this.availablehints = availablehints;
 	}
 	
-	private ArrayList<Integer> generateMyNumbers(int amount, ArrayList<Integer> unlocked){
+	public String getPlaytime() {
+		return playtime;
+	}
+
+	public void setPlaytime(String playtime) {
+		this.playtime = playtime;
+	}
+
+	public long getTotaltime() {
+		return totaltime;
+	}
+
+	public void setTotaltime(long totaltime) {
+		this.totaltime = totaltime;
+	}
+
+	public int getProfilepic() {
+		return profilepic;
+	}
+
+
+
+	public void setProfilepic(int profilepic) {
+		this.profilepic = profilepic;
+	}
+
+
+
+	public String[] getBestplay() {
+		return bestplay;
+	}
+
+
+
+	public void setBestplay(String[] bestplay) {
+		this.bestplay = bestplay;
+	}
+
+	public int[] getCatchcount() {
+		return catchcount;
+	}
+
+	public void setCatchcount(int[] catchcount) {
+		this.catchcount = catchcount;
+	}
+
+	private ArrayList<Integer> generateMyNumbers(int amount){
 		Random random = new Random();
 		int genNumber;
+		int index = 0;
 		
 		ArrayList<Integer> auxList = new ArrayList<Integer>();
 		
-		auxList.add(0);
-		while (auxList.size() < amount){
+		while (index < amount){
 			genNumber = random.nextInt(IMGCOUNT)+1;
-			if (!auxList.contains(genNumber) && !unlocked.contains(genNumber)){
+			if (genNumber == UNOWN){
+				genNumber = random.nextInt(28)+1000;
 				auxList.add(genNumber);
-			}
-		}
-		
+			} else auxList.add(genNumber);
+			index++;
+		}	
 		return(auxList);
 	}
 	
@@ -115,14 +212,44 @@ public class Player implements Serializable {
 	}
 	
 	public int currentExp(){
-		int current = (this.getExperience() * 100) / (expToNextLevel(this.getLevel()+1));
-		return current;
+		
+		int bottom = expToNextLevel(this.getLevel());
+		System.out.println("bottom: "+bottom);
+		int top = expToNextLevel(this.getLevel()+1);
+		System.out.println("top: "+top);
+		int difference = this.getExperience() - bottom;
+		
+		System.out.println("Current experience: "+difference);
+		int levelrange = top-bottom;
+		
+		System.out.println("level experience: "+levelrange);
+		
+		int cexp = (difference * 100) / levelrange;
+
+		return cexp;
 	}
 	
-	public void winGame(int difficulty){
+	public void winGame(int difficulty, long time){
+		
+		setTotaltime(getTotaltime()+time);
+		setPlaytime(date.format(getTotaltime()));
 		setAvailablehints(this.getAvailablehints()+10);
-		setExperience(this.getExperience()+20+10*difficulty);
+		setExperience(this.getExperience()+10+2*difficulty);
+		
+		if (this.records[difficulty] == 0){
+			this.records[difficulty] = time;
+			this.bestplay[difficulty] = date.format(this.records[difficulty]);
+		}
+		else if (time < this.records[difficulty]){
+			this.records[difficulty] = time;
+			this.bestplay[difficulty] = date.format(this.records[difficulty]);
+		}
+		
+		int before = getLevel();
 		setLevel();
+		int after = getLevel();
+		if (after > before) this.setUnlockedmonster
+			(generateMyNumbers(15));
 		this.wonbydiff[difficulty]++;
 	}
 	

@@ -1,9 +1,6 @@
 package ui;
 
-import java.awt.AlphaComposite;
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -176,31 +173,6 @@ public class ButtonPanel extends JPanel{
 		
 		return image;
 		
-	}
-	
-	/**
-	 * Black image. Unused for now. Creates the shape of images.
-	 *
-	 * @param image the image
-	 * @return the buffered image
-	 */
-	public BufferedImage blackImage(BufferedImage image){
-		BufferedImage shadow = new BufferedImage(
-	            image.getWidth() ,
-	            image.getHeight() ,
-	            BufferedImage.TYPE_INT_ARGB);
-	        
-	        Graphics2D g2 = shadow.createGraphics();
-	        g2.drawImage(image, 0, 0, null);
-	        
-	        g2.setComposite(AlphaComposite.SrcIn);
-	        g2.setColor(Color.BLACK);
-	        g2.fillRect(0, 0, shadow.getWidth(), shadow.getHeight());       
-	        
-	        g2.dispose();      
-	        
-	        return shadow;
-	}
-	
+	}	
 
 }

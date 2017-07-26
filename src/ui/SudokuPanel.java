@@ -16,8 +16,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
-
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -94,8 +92,6 @@ public class SudokuPanel extends JPanel {
 		
 		//Creates a matrix of JPanel
 		this.mypanels = new JPanel[ROWS][COLUMNS];
-
-		//this.setPreferredSize(new Dimension(576,576));
 		
 		this.labelBG = new Color(0,64,128,128);
 		this.valueColor = new Color(64,128,0,192);
@@ -133,6 +129,7 @@ public class SudokuPanel extends JPanel {
 	 * @param myimages The ImageButton object myimages
 	 */
 	public void newSudoku(SudokuGen puzzle, ImageButton myimages){
+		
 		this.removeAll();
 		GridBagConstraints cons = new GridBagConstraints();
 		this.selPanel = new Point();

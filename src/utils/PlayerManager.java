@@ -12,6 +12,7 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 
 public class PlayerManager {
 	
@@ -19,8 +20,10 @@ public class PlayerManager {
 
 	private File dirUsers;
 	
-	public PlayerManager(String playername){
-		
+	private ArrayList<String> userlist;
+	
+	public void initPlayer(String playername){
+			
 		String path = getClass().getProtectionDomain().getCodeSource().getLocation().getPath(); 
 		try {
 			path = URLDecoder.decode(path, "UTF-8");
@@ -29,7 +32,7 @@ public class PlayerManager {
 			e.printStackTrace();
 		}
 		path = path+"users";
-		dirUsers = new File(path);;
+		dirUsers = new File(path);
 		
 		System.out.println("Directorio usuarios: "+dirUsers.toString());
 		if (!dirUsers.exists()){
@@ -46,8 +49,51 @@ public class PlayerManager {
 		}
 		else {
 			System.out.println("Creando nuevo usuario");
+			
+			
 			user = new Player(playername, 20);
 		}
+	}
+	
+	public PlayerManager(){
+		String path = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+		try {
+			path = URLDecoder.decode(path, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		path = path+"users";
+		dirUsers = new File(path);
+		
+		File[] filelist = dirUsers.listFiles();
+		userlist = new ArrayList<String>();
+		
+		for (int i=0;i<filelist.length;i++){
+			if (filelist[i].isFile()){
+				String name = filelist[i].getName();
+				String noext = name.substring(0, name.length()-4);
+				userlist.add(noext);
+			}
+		}
+	}
+	
+	public String[] getUserlist(){
+		String[] list = new String[userlist.size()];
+		for (int i=0;i<userlist.size();i++){
+			list[i] = userlist.get(i);
+		}
+		return (list);
+	}
+	
+	public boolean isUser(String user){
+		int i=0;
+		while (i<userlist.size()){
+			System.out.println("Lista: "+userlist.get(i)+" Nuevo usuario: "+user);
+			if (user.equals(userlist.get(i))) return true;
+			else i++;
+		}
+		return false;
 	}
 	
 	public Player loadUser(File fileuser){

@@ -1,16 +1,11 @@
 package ui;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.GradientPaint;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.List;
 
@@ -107,41 +102,13 @@ public class DexFrame extends JFrame {
 		scroll.setViewport(viewport);
 		
 		
-		scroll.setPreferredSize(new Dimension(360,800));
+		scroll.setPreferredSize(new Dimension(360,500));
 		add(scroll);
 		setLocationRelativeTo(null);
 		
 		setVisible(true);
 		pack();
 	}
-	
-	 private static class MyViewport extends JViewport {
-
-		private static final long serialVersionUID = 1L;
-
-			public MyViewport() {
-	            this.setOpaque(true);
-	            this.setPreferredSize(new Dimension(360,800));
-	        }
-
-	        @Override
-	        public void paintComponent(Graphics g) {
-	            super.paintComponent(g);
-	            
-	            Graphics2D g2d = (Graphics2D) g;
-	            final BufferedImage image = new BufferedImage(
-	            		this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_RGB);
-	            g2d = image.createGraphics();
-	            GradientPaint prim = new GradientPaint(0f, 0f, new Color(185,173,235,255),
-	            		200f, 0f, new Color(192,201,200,255));
-
-	            g2d.setPaint(prim);
-	            g2d.fillRect(0, 0, this.getWidth(), this.getHeight());
-	            
-	            g.drawImage(image, 0, 0, null);
-	            		
-	        }
-	    }
 
 	public DexPanel getPanel() {
 		return panel;

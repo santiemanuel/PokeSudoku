@@ -15,6 +15,7 @@ public class Player implements Serializable {
 	private int level;
 	private ArrayList<Integer> unlockedmonster;
 	private int[] catchcount;
+	private int ownedpokemon;
 	private int experience;
 	private int availablehints;
 	private int[] wonbydiff;
@@ -24,20 +25,26 @@ public class Player implements Serializable {
 	private int profilepic;
 	private long[] records;
 	private String[] bestplay;
+	private int[] typecount;
+	private final int TYPES = 18;
 	private final int UNOWN = 201;
+	private final int HINTS = 10;
+	private Pokemon pokemon;
 	
 	private final int IMGCOUNT = 388;
 	private final int DIFFCOUNT = 4;
 	
 	public Player(String name, int amount){
 		this.setName(name);
+		this.pokemon = new Pokemon();
+		this.typecount = new int[TYPES];
 		this.unlockedmonster = new ArrayList<Integer>();
 		this.unlockedmonster.add(0);
 		this.catchcount = new int[1028];
 		this.setUnlockedmonster(initMyNumbers(amount));
 		this.setLevel();
 		this.experience = 0;
-		this.setAvailablehints(10);
+		this.setAvailablehints(HINTS);
 		this.wonbydiff = new int[DIFFCOUNT];
 		this.records = new long[DIFFCOUNT];
 		this.bestplay = new String[DIFFCOUNT];
@@ -49,13 +56,22 @@ public class Player implements Serializable {
 			this.bestplay[i] = date.format(this.records[i]);
 		}
 		this.setProfilepic(getUnlockedmonster().get(1));
+		this.ownedpokemon = countPokemon(); 
 		
 	}
 	
+	private int countPokemon(){
+		int counter = 0;
+		for (int i=1;i<1028;i++){
+			counter += this.catchcount[i];
+		}
+		return (counter);
+	}
+		
 	private ArrayList<Integer> initMyNumbers(int amount){
 		Random random = new Random();
 		int genNumber;
-		int unique = 300;
+		int unique = 9;
 		
 		ArrayList<Integer> auxList = new ArrayList<Integer>();
 		
@@ -66,10 +82,12 @@ public class Player implements Serializable {
 					genNumber = random.nextInt(28)+1000;
 					if (!auxList.contains(genNumber)){
 						auxList.add(genNumber);
+						addPokemonToType(pokemon.getTypeInt(UNOWN));
 						this.catchcount[genNumber]++;
 					}
 				} else{
 					auxList.add(genNumber);
+					addPokemonToType(pokemon.getTypeInt(genNumber));
 					this.catchcount[genNumber]++;
 				}
 			}
@@ -93,9 +111,9 @@ public class Player implements Serializable {
 			if (this.unlockedmonster.indexOf(imgID) == -1){
 				this.unlockedmonster.add(imgID);	
 			}
-			this.catchcount[imgID]++;
 			unlockedmonster.remove(0);
 		}
+		this.ownedpokemon = countPokemon();
 	}
 
 	public int getLevel() {
@@ -162,19 +180,13 @@ public class Player implements Serializable {
 		return profilepic;
 	}
 
-
-
 	public void setProfilepic(int profilepic) {
 		this.profilepic = profilepic;
 	}
 
-
-
 	public String[] getBestplay() {
 		return bestplay;
 	}
-
-
 
 	public void setBestplay(String[] bestplay) {
 		this.bestplay = bestplay;
@@ -188,7 +200,41 @@ public class Player implements Serializable {
 		this.catchcount = catchcount;
 	}
 
-	private ArrayList<Integer> generateMyNumbers(int amount){
+	public int getOwnedpokemon() {
+		return ownedpokemon;
+	}
+
+	public void setOwnedpokemon(int ownedpokemon) {
+		this.ownedpokemon = ownedpokemon;
+	}
+
+	public int[] getTypecountlist() {
+		return typecount;
+	}
+
+	public void setTypecount(int[] typecount) {
+		this.typecount = typecount;
+	}
+	
+	public void addPokemonToType(ArrayList<Integer> pokemontype){
+		for (int i=0;i<pokemontype.size();i++){
+			this.typecount[pokemontype.get(i)]++;
+		}
+	}
+	
+	public int getTypeCount(int pokemontype){
+		return (this.typecount[pokemontype]);
+	}
+
+	public Pokemon getPokemon() {
+		return pokemon;
+	}
+
+	public void setPokemon(Pokemon pokemon) {
+		this.pokemon = pokemon;
+	}
+
+	public ArrayList<Integer> generateMyNumbers(int amount){
 		Random random = new Random();
 		int genNumber;
 		int index = 0;
@@ -200,9 +246,13 @@ public class Player implements Serializable {
 			if (genNumber == UNOWN){
 				genNumber = random.nextInt(28)+1000;
 				auxList.add(genNumber);
-			} else auxList.add(genNumber);
+				this.catchcount[genNumber]++;
+			} else{
+				auxList.add(genNumber);
+				this.catchcount[genNumber]++;
+			}
 			index++;
-		}	
+		}
 		return(auxList);
 	}
 	
@@ -214,9 +264,7 @@ public class Player implements Serializable {
 	public int currentExp(){
 		
 		int bottom = expToNextLevel(this.getLevel());
-		System.out.println("bottom: "+bottom);
 		int top = expToNextLevel(this.getLevel()+1);
-		System.out.println("top: "+top);
 		int difference = this.getExperience() - bottom;
 		
 		System.out.println("Current experience: "+difference);
@@ -234,7 +282,7 @@ public class Player implements Serializable {
 		setTotaltime(getTotaltime()+time);
 		setPlaytime(date.format(getTotaltime()));
 		setAvailablehints(this.getAvailablehints()+10);
-		setExperience(this.getExperience()+10+2*difficulty);
+		setExperience(this.getExperience()+30+3*difficulty);
 		
 		if (this.records[difficulty] == 0){
 			this.records[difficulty] = time;
@@ -248,8 +296,8 @@ public class Player implements Serializable {
 		int before = getLevel();
 		setLevel();
 		int after = getLevel();
-		if (after > before) this.setUnlockedmonster
-			(generateMyNumbers(15));
+		if (after > before)this.setUnlockedmonster(generateMyNumbers(15));
+			
 		this.wonbydiff[difficulty]++;
 	}
 	

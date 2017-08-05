@@ -83,7 +83,7 @@ public class GameFrame extends JFrame {
 	private int selectedDiff;
 	
 	/** The difficulty combo box. */
-	private JComboBox<String> diffComboBox;
+	private JComboBox<String> diffComboBox, usersCombobox;
 	
 	/** The play time. */
 	private JLabel playTime;
@@ -124,9 +124,40 @@ public class GameFrame extends JFrame {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setResolution();
 		
-		this.playername = JOptionPane.showInputDialog("Ingresa tu nombre");
+		playerman = new PlayerManager();
 		
-		playerman = new PlayerManager(this.playername);
+		usersCombobox = new JComboBox<String>();
+		
+		String newplayer = "Nuevo jugador";
+		usersCombobox.addItem(newplayer);
+		
+		if (playerman.getUserlist().length != 0){
+		for (String username: playerman.getUserlist()){
+				usersCombobox.addItem(username);
+			}
+		}
+		JOptionPane.showMessageDialog(null, usersCombobox, "Selecciona tu usuario", JOptionPane.QUESTION_MESSAGE);
+		
+		playername = (String) usersCombobox.getSelectedItem();
+		
+		if (playername == newplayer){
+			String name = "";
+			while (name.isEmpty() || name == null){
+				name = JOptionPane.showInputDialog("Ingresa tu nombre: ");
+				if (name == null){
+					JOptionPane.showMessageDialog(null, "No se puede cancelar.");
+					name = "";
+				}
+				else if (name.isEmpty())
+					JOptionPane.showMessageDialog(null, "El nombre no puede estar vacio.");
+				if (playerman.isUser(name)){
+					JOptionPane.showMessageDialog(null, "El usuario ya existe, cargando perfil.");
+				}
+			}
+			playername = name;
+		}
+		
+		playerman.initPlayer(playername);
 		
 		this.addWindowListener(new WindowAdapter(){
 			public void windowClosing(WindowEvent e){
@@ -145,7 +176,7 @@ public class GameFrame extends JFrame {
 		this.windowPanel = new JPanel(new BorderLayout());
 		windowPanel.setPreferredSize(new Dimension(WIDTH+100,HEIGHT+30));		
 	
-		//this.setResizable(false);
+		this.setResizable(false);
 		
 		this.diffComboBox = new JComboBox<String>((String[]) difficulty.toArray());
 		
@@ -349,7 +380,6 @@ public class GameFrame extends JFrame {
 					int levelAfter = playerman.getUser().getLevel();
 					WinDialog dialog = new WinDialog(playerman.getUser(),levelBefore,levelAfter);
 					if (levelAfter > levelBefore){
-						dexframe.removeAll();
 						dexframe = new DexFrame(playerman.getUser());
 					}
 					JOptionPane.showMessageDialog(null,dialog.getItems());
